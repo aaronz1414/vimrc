@@ -22,6 +22,8 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/syntastic'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'godlygeek/tabular'
+Plugin 'valloric/youcompleteme'
+Plugin 'flazz/vim-colorschemes'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -48,6 +50,11 @@ map <C-n> :NERDTreeToggle<CR>
 
 "======================= PERSONAL SETTINGS ==============================
 set number
+set colorcolumn=80
+set cursorline
+set cursorcolumn
+colorscheme herald
+syntax on
 
 
 "======================= SYNTASTIC SETTINGS =============================
