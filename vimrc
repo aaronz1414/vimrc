@@ -19,10 +19,10 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'scrooloose/syntastic'
+"Plugin 'scrooloose/syntastic'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'godlygeek/tabular'
-Plugin 'valloric/youcompleteme'
+"Plugin 'valloric/youcompleteme'
 Plugin 'flazz/vim-colorschemes'
 
 " All of your Plugins must be added before the following line
@@ -53,17 +53,29 @@ set number
 set colorcolumn=80
 set cursorline
 set cursorcolumn
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+set scrolloff=10
+set foldenable
+set splitright
+set splitbelow
 colorscheme herald
 syntax on
 
+augroup vimrc_autocmds
+    autocmd BufEnter * highlight ColorColumn ctermbg=0
+augroup END
+    
+
 
 "======================= SYNTASTIC SETTINGS =============================
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 1
+"let g:syntastic_check_on_open = 1
+"let g:syntastic_check_on_wq = 0
 
