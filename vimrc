@@ -56,8 +56,20 @@ set number
 "set colorcolumn=80
 set cursorline
 set cursorcolumn
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+set scrolloff=10
+set foldenable
+set splitright
+set splitbelow
 colorscheme herald
 syntax on
+
+augroup vimrc_autocmds
+    autocmd BufEnter * highlight ColorColumn ctermbg=0
+augroup END
+    
 
 
 "======================= SYNTASTIC SETTINGS =============================
