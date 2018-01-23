@@ -21,7 +21,7 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'godlygeek/tabular'
-Plugin 'valloric/youcompleteme'
+"Plugin 'valloric/youcompleteme'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'lervag/vimtex'
 Plugin 'vim-airline/vim-airline'
@@ -35,7 +35,7 @@ call vundle#end()            " required
 
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
-"filetype plugin on
+filetype plugin on
 "
 " Brief help
 " :PluginList       - lists configured plugins
@@ -53,7 +53,7 @@ map <C-n> :NERDTreeToggle<CR>
 
 "======================= PERSONAL SETTINGS ==============================
 set number
-"set colorcolumn=80
+set colorcolumn=80
 set cursorline
 set cursorcolumn
 set expandtab
@@ -64,6 +64,8 @@ set foldenable
 set splitright
 set splitbelow
 colorscheme herald
+set background=dark
+set t_Co=256
 syntax on
 
 augroup vimrc_autocmds
