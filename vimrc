@@ -66,7 +66,9 @@ set splitbelow
 colorscheme herald
 set background=dark
 set t_Co=256
-syntax on
+if !exists("g:syntax_on")
+    syntax enable
+endif
 
 augroup vimrc_autocmds
     autocmd BufEnter * highlight ColorColumn ctermbg=0
