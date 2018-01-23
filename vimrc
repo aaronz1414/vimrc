@@ -65,7 +65,7 @@ set splitright
 set splitbelow
 colorscheme herald
 set background=dark
-set t_Co=256
+set t_Co=16
 if !exists("g:syntax_on")
     syntax enable
 endif
