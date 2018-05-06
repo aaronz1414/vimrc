@@ -21,7 +21,7 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'godlygeek/tabular'
-"Plugin 'valloric/youcompleteme'
+Plugin 'valloric/youcompleteme'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'lervag/vimtex'
 Plugin 'vim-airline/vim-airline'
@@ -74,6 +74,9 @@ augroup vimrc_autocmds
     autocmd BufEnter * highlight ColorColumn ctermbg=0
 augroup END
     
+
+"======================= NERDTREE SETTINGS =============================
+let NERDTreeIgnore = ['\.pyc$']
 
 
 "======================= SYNTASTIC SETTINGS =============================
