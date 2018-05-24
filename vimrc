@@ -26,6 +26,13 @@ Plugin 'flazz/vim-colorschemes'
 Plugin 'lervag/vimtex'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'fatih/vim-go'
+Plugin 'tpope/vim-surround'
+Plugin 'kien/ctrlp.vim'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'majutsushi/tagbar'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-easytags'
 "Plugin 'scrooloose/syntastic'
 
 " All of your Plugins must be added before the following line
@@ -61,10 +68,11 @@ set shiftwidth=4
 set softtabstop=4
 set scrolloff=10
 set foldenable
+set foldmethod=syntax
 set splitright
 set splitbelow
-colorscheme herald
 set background=dark
+colorscheme lettuce
 set t_Co=16
 if !exists("g:syntax_on")
     syntax enable
@@ -78,8 +86,16 @@ augroup END
 "======================= NERDTREE SETTINGS =============================
 let NERDTreeIgnore = ['\.pyc$']
 
+"======================= TAGBAR SETTINGS ===============================
+map <C-l> :TagbarToggle<CR>
 
-"======================= SYNTASTIC SETTINGS =============================
+"======================= VIM-GO SETTINGS ===============================
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+
+"======================= SYNTASTIC SETTINGS ============================
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
 "set statusline+=%*

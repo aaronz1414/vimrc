@@ -2,4 +2,5 @@ Install [vundle](https://github.com/VundleVim/Vundle.vim) for plugin management.
 
 On a new machine, make sure to follow installation steps for [YouCompleteMe](https://vimawesome.com/plugin/youcompleteme) (or comment out the plugin)
 
+For Tagbar and easytags, you need to have some version of ctags installed. You can run this command if it's not already installed: `sudo apt-get install exuberant-ctags`
 
