@@ -72,9 +72,9 @@ set foldenable
 set foldmethod=syntax
 set splitright
 set splitbelow
-set background=dark
+"set background=dark
+set t_Co=256
 colorscheme lettuce
-set t_Co=16
 if !exists("g:syntax_on")
     syntax enable
 endif
