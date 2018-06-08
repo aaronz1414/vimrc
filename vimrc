@@ -19,16 +19,16 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
-"Plugin 'scrooloose/nerdcommenter'
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'godlygeek/tabular'
-"Plugin 'valloric/youcompleteme'
+Plugin 'valloric/youcompleteme'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'lervag/vimtex'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'fatih/vim-go'
 Plugin 'tpope/vim-surround'
-"Plugin 'kien/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'majutsushi/tagbar'
 Plugin 'xolox/vim-misc'
@@ -42,7 +42,7 @@ call vundle#end()            " required
 
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
-filetype plugin on
+" filetype plugin on
 "
 " Brief help
 " :PluginList       - lists configured plugins
@@ -54,27 +54,34 @@ filetype plugin on
 " Put your non-Plugin stuff after this line
 
 
-"========================= KEY BINDINGS =================================
-map <C-m> :NERDTreeToggle<CR>
-
-
 "======================= PERSONAL SETTINGS ==============================
 set path+=**
+set scrolloff=10
+
+" Tab Settings
+set tabstop=4
+set softtabstop=0
+set shiftwidth=4
+set expandtab
+set smarttab
+
+" Folding Settings
+set foldenable
+set foldmethod=syntax
+
+" Pane Settings
+set splitright
+set splitbelow
+
+" Style Settings
 set number
 set colorcolumn=80
 set cursorline
 set cursorcolumn
-set expandtab
-set shiftwidth=4
-set softtabstop=4
-set scrolloff=10
-set foldenable
-set foldmethod=syntax
-set splitright
-set splitbelow
-"set background=dark
+set statusline+=%F
 set t_Co=256
 colorscheme lettuce
+
 if !exists("g:syntax_on")
     syntax enable
 endif
@@ -82,9 +89,10 @@ endif
 augroup vimrc_autocmds
     autocmd BufEnter * highlight ColorColumn ctermbg=0
 augroup END
-    
+
 
 "======================= NERDTREE SETTINGS =============================
+map <C-m> :NERDTreeToggle<CR>
 let NERDTreeIgnore = ['\.pyc$']
 
 "======================= TAGBAR SETTINGS ===============================
@@ -94,7 +102,10 @@ map <C-l> :TagbarToggle<CR>
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_functions = 1
-let g:go_highlight_function_calls = 1
+"let g:go_highlight_function_calls = 1
+let g:go_fmt_experimental = 1
+let g:go_auto_sameids = 1
+map <C-[> :GoReferrers<CR>
 
 "======================= SYNTASTIC SETTINGS ============================
 "set statusline+=%#warningmsg#
