@@ -24,8 +24,8 @@ Plugin 'godlygeek/tabular'
 Plugin 'valloric/youcompleteme'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'lervag/vimtex'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+"Plugin 'vim-airline/vim-airline'
+"Plugin 'vim-airline/vim-airline-themes'
 Plugin 'fatih/vim-go'
 Plugin 'tpope/vim-surround'
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -57,6 +57,7 @@ filetype plugin indent on    " required
 "======================= PERSONAL SETTINGS ==============================
 set path+=**
 set scrolloff=10
+set nrformats=
 
 " Tab Settings
 set tabstop=4
@@ -100,12 +101,12 @@ map <C-l> :TagbarToggle<CR>
 
 "======================= VIM-GO SETTINGS ===============================
 let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
+"let g:go_highlight_fields = 1
 let g:go_highlight_functions = 1
 "let g:go_highlight_function_calls = 1
 let g:go_fmt_experimental = 1
-let g:go_auto_sameids = 1
-map <C-[> :GoReferrers<CR>
+"let g:go_auto_sameids = 1
+"map <C-[> :GoReferrers<CR>
 
 "======================= SYNTASTIC SETTINGS ============================
 "set statusline+=%#warningmsg#
