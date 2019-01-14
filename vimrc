@@ -4,7 +4,6 @@ filetype off                  " required
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 
-
 "============================= PLUGINS ==================================
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
@@ -20,26 +19,26 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdcommenter'
-Plugin 'godlygeek/tabular'
-Plugin 'valloric/youcompleteme'
+"Plugin 'godlygeek/tabular'
+"Plugin 'valloric/youcompleteme'
 Plugin 'flazz/vim-colorschemes'
-Plugin 'lervag/vimtex'
+"Plugin 'lervag/vimtex'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'fatih/vim-go'
-Plugin 'tpope/vim-surround'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'majutsushi/tagbar'
-Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-easytags'
-Plugin 'hashivim/vim-terraform'
+"Plugin 'fatih/vim-go'
+Plugin 'pangloss/vim-javascript'
+"Plugin 'tpope/vim-surround'
+"Plugin 'ctrlpvim/ctrlp.vim'
+"Plugin 'plasticboy/vim-markdown'
+"Plugin 'majutsushi/tagbar'
+"Plugin 'xolox/vim-misc'
+"Plugin 'xolox/vim-easytags'
+"Plugin 'hashivim/vim-terraform'
 "Plugin 'scrooloose/syntastic'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 "========================================================================
-
 
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
@@ -54,16 +53,20 @@ filetype plugin indent on    " required
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
 
-
 "======================= PERSONAL SETTINGS ==============================
 set path+=**
 set scrolloff=10
 set nrformats=
 
+set history=200
+set term=xterm-256color
+set nowrap
+set incsearch
+
 " Tab Settings
-set tabstop=4
+set tabstop=2
 set softtabstop=0
-set shiftwidth=4
+set shiftwidth=2
 set expandtab
 set smarttab
 
@@ -82,7 +85,7 @@ set cursorline
 set cursorcolumn
 set statusline+=%F
 set t_Co=256
-colorscheme lettuce
+colorscheme iceberg
 
 if !exists("g:syntax_on")
     syntax enable
@@ -92,9 +95,12 @@ augroup vimrc_autocmds
     autocmd BufEnter * highlight ColorColumn ctermbg=0
 augroup END
 
+"======================= KEY REMAPPINGS ================================
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
 
 "======================= NERDTREE SETTINGS =============================
-map <C-m> :NERDTreeToggle<CR>
+map <C-n> :NERDTreeToggle<CR>
 let NERDTreeIgnore = ['\.pyc$']
 
 "======================= TAGBAR SETTINGS ===============================
@@ -109,6 +115,11 @@ let g:go_fmt_experimental = 1
 "let g:go_auto_sameids = 1
 "map <C-[> :GoReferrers<CR>
 
+"======================= VIM-TERRAFORM SETTINGS ========================
+let g:terraform_fmt_on_save = 1
+let g:terraform_align=1
+let g:terraform_fold_sections=1
+
 "======================= SYNTASTIC SETTINGS ============================
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
@@ -118,4 +129,3 @@ let g:go_fmt_experimental = 1
 "let g:syntastic_auto_loc_list = 1
 "let g:syntastic_check_on_open = 1
 "let g:syntastic_check_on_wq = 0
-
