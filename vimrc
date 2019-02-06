@@ -25,10 +25,10 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'pangloss/vim-javascript'
 Plugin 'hashivim/vim-terraform'
+Plugin 'valloric/youcompleteme'
 
 " Plugins I've used but haven't wanted installed recently
 "Plugin 'godlygeek/tabular'
-"Plugin 'valloric/youcompleteme'
 "Plugin 'lervag/vimtex'
 "Plugin 'fatih/vim-go'
 "Plugin 'tpope/vim-surround'
@@ -82,8 +82,10 @@ set splitbelow
 " Style Settings
 set number
 set colorcolumn=80
-set cursorline
-set cursorcolumn
+set nocursorcolumn
+set nocursorline
+set norelativenumber
+syntax sync minlines=256
 set statusline+=%F
 set t_Co=256
 colorscheme iceberg
@@ -104,6 +106,8 @@ nnoremap <silent> <Leader>l :exe "vertical resize -3"<CR>
 nnoremap <silent> <Leader>m :exe "vertical resize +3"<CR>
 nnoremap <silent> <Leader>s :exe "resize -3"<CR>
 nnoremap <silent> <Leader>b :exe "resize +3"<CR>
+
+nnoremap <silent> <Leader>k :set cursorcolumn!<Bar>set cursorline!<CR>
 
 "========================== NERDTREE SETTINGS ==================================
 map <C-n> :NERDTreeToggle<CR>
@@ -156,11 +160,11 @@ command! -nargs=* Fa call fzf#run({
 map <C-l> :TagbarToggle<CR>
 
 "============================= VIM-GO SETTINGS =================================
-let g:go_highlight_types = 1
+"let g:go_highlight_types = 1
 "let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
+"let g:go_highlight_functions = 1
 "let g:go_highlight_function_calls = 1
-let g:go_fmt_experimental = 1
+"let g:go_fmt_experimental = 1
 "let g:go_auto_sameids = 1
 "map <C-[> :GoReferrers<CR>
 
