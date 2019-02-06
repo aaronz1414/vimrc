@@ -85,7 +85,6 @@ set colorcolumn=80
 set nocursorcolumn
 set nocursorline
 set norelativenumber
-syntax sync minlines=256
 set statusline+=%F
 set t_Co=256
 colorscheme iceberg
