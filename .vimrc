@@ -59,6 +59,7 @@ set history=200
 set term=xterm-256color
 set nowrap
 set incsearch
+set autoindent
 
 " Folding Settings
 set foldenable
