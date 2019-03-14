@@ -1,19 +1,16 @@
-set nocompatible              " be iMproved, required
-filetype off                  " required
+set nocompatible
+
+"============================= VUNDLE ==========================================
+filetype off " required to setup vundle plugins correctly
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
-set rtp+=~/.fzf
 
-"============================= VUNDLE ==========================================
+" Keep Plugin commands between vundle#begin/end.
 call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
-
-" Keep Plugin commands between vundle#begin/end.
 
 " Plugins I've been using
 Plugin 'tpope/vim-fugitive'
@@ -25,26 +22,21 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'pangloss/vim-javascript'
 Plugin 'hashivim/vim-terraform'
-Plugin 'valloric/youcompleteme'
 
 " Plugins I've used but haven't wanted installed recently
+"Plugin 'valloric/youcompleteme'
 "Plugin 'godlygeek/tabular'
 "Plugin 'lervag/vimtex'
 "Plugin 'fatih/vim-go'
 "Plugin 'tpope/vim-surround'
 "Plugin 'plasticboy/vim-markdown'
 "Plugin 'majutsushi/tagbar'
+"Plugin 'scrooloose/syntastic'
 "Plugin 'xolox/vim-misc'
 "Plugin 'xolox/vim-easytags'
-"Plugin 'scrooloose/syntastic'
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
+call vundle#end()
 
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-" filetype plugin on
-"
 " Brief help
 " :PluginList       - lists configured plugins
 " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
@@ -55,21 +47,18 @@ filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 
 "============================ PERSONAL SETTINGS ================================
+
+filetype plugin on
+
 set path+=**
-set scrolloff=10
 set nrformats=
+
+set scrolloff=5
 
 set history=200
 set term=xterm-256color
 set nowrap
 set incsearch
-
-" Tab Settings
-set tabstop=2
-set softtabstop=0
-set shiftwidth=2
-set expandtab
-set smarttab
 
 " Folding Settings
 set foldenable
@@ -85,17 +74,18 @@ set colorcolumn=80
 set nocursorcolumn
 set nocursorline
 set norelativenumber
-set statusline+=%F
 set t_Co=256
 colorscheme iceberg
 
-if !exists("g:syntax_on")
-    syntax enable
-endif
+set statusline+=%F
 
-augroup vimrc_autocmds
-    autocmd BufEnter * highlight ColorColumn ctermbg=0
-augroup END
+"if !exists("g:syntax_on")
+    "syntax enable
+"endif
+
+"augroup vimrc_autocmds
+    "autocmd BufEnter * highlight ColorColumn ctermbg=0
+"augroup END
 
 "============================= KEY MAPPINGS ====================================
 cnoremap <C-p> <Up>
@@ -108,11 +98,16 @@ nnoremap <silent> <Leader>b :exe "resize +3"<CR>
 
 nnoremap <silent> <Leader>k :set cursorcolumn!<Bar>set cursorline!<CR>
 
+nnoremap <silent> [q :cprevious<CR>
+nnoremap <silent> ]q :cnext<CR>
+
 "========================== NERDTREE SETTINGS ==================================
 map <C-n> :NERDTreeToggle<CR>
 let NERDTreeIgnore = ['\.pyc$']
 
 "============================ FZF SETTINGS =====================================
+set rtp+=~/.fzf
+
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
@@ -154,9 +149,12 @@ command! -nargs=* Fa call fzf#run({
 \            '--color hl:68,hl+:110',
 \ 'down':    '50%'
 \ })
+"
+"============================ EASYTAGS SETTINGS ================================
+"let g:easytags_async = 1
 
 "============================= TAGBAR SETTINGS =================================
-map <C-l> :TagbarToggle<CR>
+"map <C-l> :TagbarToggle<CR>
 
 "============================= VIM-GO SETTINGS =================================
 "let g:go_highlight_types = 1
@@ -169,8 +167,8 @@ map <C-l> :TagbarToggle<CR>
 
 "========================== VIM-TERRAFORM SETTINGS =============================
 let g:terraform_fmt_on_save = 1
-let g:terraform_align=1
-let g:terraform_fold_sections=1
+let g:terraform_align = 1
+let g:terraform_fold_sections = 1
 
 "=========================== SYNTASTIC SETTINGS ================================
 "set statusline+=%#warningmsg#
