@@ -14,6 +14,7 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Plugins I've been using
 Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-dispatch'
 Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdcommenter'
@@ -22,6 +23,7 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'pangloss/vim-javascript'
 Plugin 'hashivim/vim-terraform'
+Plugin 'janko/vim-test'
 
 " Plugins I've used but haven't wanted installed recently
 "Plugin 'valloric/youcompleteme'
@@ -64,6 +66,13 @@ set autoindent
 " Folding Settings
 set foldenable
 set foldmethod=syntax
+"
+" Tab Settings
+set tabstop=2
+set softtabstop=0
+set shiftwidth=2
+set expandtab
+set smarttab
 
 " Pane Settings
 set splitright
@@ -142,8 +151,19 @@ function! s:ag_handler(lines)
 endfunction
 
 command! -nargs=* Fa call fzf#run({
-\ 'source':  printf('ag --nogroup --column --color "%s"',
+\ 'source':  printf('ag --ignore node_modules --nogroup --column --color "%s"',
 \                   escape(empty(<q-args>) ? '^(?=.)' : <q-args>, '"\')),
+\ 'sink*':    function('<sid>ag_handler'),
+\ 'options': '--ansi --expect=ctrl-t,ctrl-v,ctrl-x --delimiter : --nth 4.. '.
+\            '--multi --bind=ctrl-a:select-all,ctrl-d:deselect-all '.
+\            '--color hl:68,hl+:110',
+\ 'down':    '50%'
+\ })
+
+command! -nargs=* Faf call fzf#run({
+\ 'source':  printf('ag --vimgrep "%s" %s',
+\                   escape(empty(<q-args>) ? '^(?=.)' : <q-args>, '"\'),
+\                   expand("%")),
 \ 'sink*':    function('<sid>ag_handler'),
 \ 'options': '--ansi --expect=ctrl-t,ctrl-v,ctrl-x --delimiter : --nth 4.. '.
 \            '--multi --bind=ctrl-a:select-all,ctrl-d:deselect-all '.
@@ -170,6 +190,14 @@ command! -nargs=* Fa call fzf#run({
 let g:terraform_fmt_on_save = 1
 let g:terraform_align = 1
 let g:terraform_fold_sections = 1
+
+"============================= VIM-TEST SETTINGS ===============================
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+let test#strategy = "dispatch"
 
 "=========================== SYNTASTIC SETTINGS ================================
 "set statusline+=%#warningmsg#
