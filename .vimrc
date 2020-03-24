@@ -24,6 +24,13 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'pangloss/vim-javascript'
 Plugin 'hashivim/vim-terraform'
 Plugin 'janko/vim-test'
+Plugin 'leafgarland/typescript-vim'
+
+" Plugins to consider using
+"
+" Consider installing this for better autocompletion, want to make sure I can
+" use the local version though
+" Plugin 'zxqfl/tabnine-vim'
 
 " Plugins I've used but haven't wanted installed recently
 "Plugin 'valloric/youcompleteme'
@@ -85,7 +92,7 @@ set nocursorcolumn
 set nocursorline
 set norelativenumber
 set t_Co=256
-colorscheme iceberg
+"colorscheme iceberg
 
 set statusline+=%F
 
