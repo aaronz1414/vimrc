@@ -15,6 +15,7 @@ Plugin 'VundleVim/Vundle.vim'
 " Plugins I've been using
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-dispatch'
+Plugin 'tpope/vim-eunuch'
 Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdcommenter'
@@ -25,6 +26,7 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'hashivim/vim-terraform'
 Plugin 'janko/vim-test'
 Plugin 'leafgarland/typescript-vim'
+Plugin 'quramy/tsuquyomi'
 
 " Plugins to consider using
 "
@@ -69,6 +71,9 @@ set term=xterm-256color
 set nowrap
 set incsearch
 set autoindent
+
+" Alignment Setting
+set cino+=(0
 
 " Folding Settings
 set foldenable
