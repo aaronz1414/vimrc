@@ -27,9 +27,8 @@ Plugin 'hashivim/vim-terraform'
 Plugin 'janko/vim-test'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'quramy/tsuquyomi'
+Plugin 'suan/vim-instant-markdown', {'rtp': 'after'}
 
-" Plugins to consider using
-"
 " Consider installing this for better autocompletion, want to make sure I can
 " use the local version though
 " Plugin 'zxqfl/tabnine-vim'
@@ -162,6 +161,7 @@ function! s:ag_handler(lines)
   endif
 endfunction
 
+"Fuzzy find within the current working directory
 command! -nargs=* Fa call fzf#run({
 \ 'source':  printf('ag --ignore node_modules --nogroup --column --color "%s"',
 \                   escape(empty(<q-args>) ? '^(?=.)' : <q-args>, '"\')),
@@ -172,6 +172,7 @@ command! -nargs=* Fa call fzf#run({
 \ 'down':    '50%'
 \ })
 
+"Fuzzy find within the current file
 command! -nargs=* Faf call fzf#run({
 \ 'source':  printf('ag --vimgrep "%s" %s',
 \                   escape(empty(<q-args>) ? '^(?=.)' : <q-args>, '"\'),

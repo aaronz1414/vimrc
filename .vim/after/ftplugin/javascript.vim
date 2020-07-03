@@ -1,5 +1,5 @@
 " Set make command
-set makeprg=eslint\ --quiet\ --no-color\ -f\ unix\ $*
+set makeprg=npx\ eslint\ --ignore-path\ .gitignore\ --quiet\ --no-color\ -f\ unix\ .
 set errorformat=%f:%l:%c:\ %m
 
 " Tab Settings
