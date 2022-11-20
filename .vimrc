@@ -19,21 +19,26 @@ Plugin 'tpope/vim-eunuch'
 Plugin 'scrooloose/nerdtree'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdcommenter'
-Plugin 'flazz/vim-colorschemes'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'pangloss/vim-javascript'
-Plugin 'hashivim/vim-terraform'
 Plugin 'janko/vim-test'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'quramy/tsuquyomi'
 Plugin 'suan/vim-instant-markdown', {'rtp': 'after'}
+Plugin 'prettier/vim-prettier'
+Plugin 'dense-analysis/ale'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'haya14busa/incsearch.vim'
+Plugin 'haya14busa/incsearch-easymotion.vim'
+"Plugin 'puremourning/vimspector'
 
 " Consider installing this for better autocompletion, want to make sure I can
 " use the local version though
 " Plugin 'zxqfl/tabnine-vim'
 
 " Plugins I've used but haven't wanted installed recently
+"Plugin 'hashivim/vim-terraform'
 "Plugin 'valloric/youcompleteme'
 "Plugin 'godlygeek/tabular'
 "Plugin 'lervag/vimtex'
@@ -44,6 +49,7 @@ Plugin 'suan/vim-instant-markdown', {'rtp': 'after'}
 "Plugin 'scrooloose/syntastic'
 "Plugin 'xolox/vim-misc'
 "Plugin 'xolox/vim-easytags'
+"Plugin 'flazz/vim-colorschemes'
 
 call vundle#end()
 
@@ -59,6 +65,7 @@ call vundle#end()
 "============================ PERSONAL SETTINGS ================================
 
 filetype plugin on
+syntax on
 
 set path+=**
 set nrformats=
@@ -66,7 +73,7 @@ set nrformats=
 set scrolloff=5
 
 set history=200
-set term=xterm-256color
+"set term=xterm-256color
 set nowrap
 set incsearch
 set autoindent
@@ -77,6 +84,10 @@ set cino+=(0
 " Folding Settings
 set foldenable
 set foldmethod=syntax
+
+" https://superuser.com/questions/836781/make-vims-motions-skip-over-folds
+set foldopen-=block
+
 "
 " Tab Settings
 set tabstop=2
@@ -96,7 +107,8 @@ set nocursorcolumn
 set nocursorline
 set norelativenumber
 set t_Co=256
-"colorscheme iceberg
+set background=dark
+colorscheme everforest
 
 set statusline+=%F
 
@@ -109,6 +121,7 @@ set statusline+=%F
 "augroup END
 
 "============================= KEY MAPPINGS ====================================
+" https://vi.stackexchange.com/questions/7722/how-to-debug-a-mapping
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 
@@ -119,15 +132,45 @@ nnoremap <silent> <Leader>b :exe "resize +3"<CR>
 
 nnoremap <silent> <Leader>k :set cursorcolumn!<Bar>set cursorline!<CR>
 
+" tsuquyomi
+autocmd FileType typescript nmap <buffer> <Leader>r <Plug>(TsuquyomiRenameSymbol)
+autocmd FileType typescript nmap <buffer> <Leader>R <Plug>(TsuquyomiRenameSymbolC)
+autocmd FileType typescript nmap <buffer> <Leader>f <Plug>(TsuquyomiReferences)
+autocmd FileType typescript nmap <buffer> <Leader>t : <C-u>echo tsuquyomi#hint()<CR>
+
+" vim-test
+"nmap <silent> <Leader>t :TestNearest<CR>
+"nmap <silent> <Leader>T :TestFile<CR>
+"nmap <silent> <Leader>a :TestSuite<CR>
+"nmap <silent> <Leader>p :TestLast<CR>
+"nmap <silent> <Leader>g :TestVisit<CR>
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+
 nnoremap <silent> [q :cprevious<CR>
 nnoremap <silent> ]q :cnext<CR>
 
-"========================== NERDTREE SETTINGS ==================================
+" easymotion
+nmap z/ <Plug>(incsearch-easymotion-/)
+nmap z? <Plug>(incsearch-easymotion-?)
+
 map <C-n> :NERDTreeToggle<CR>
+
+"============================ QUICKFIX SETTINGS ================================
+augroup quickfix
+  autocmd!
+  autocmd FileType qf setlocal wrap
+augroup END
+
+"========================== NERDTREE SETTINGS ==================================
 let NERDTreeIgnore = ['\.pyc$']
 
 "============================ FZF SETTINGS =====================================
-set rtp+=~/.fzf
+"set rtp+=~/.fzf
+set rtp+=/opt/homebrew/opt/fzf
 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
@@ -172,6 +215,17 @@ command! -nargs=* Fa call fzf#run({
 \ 'down':    '50%'
 \ })
 
+"Fuzzy find within the current working directory, including node_modules
+command! -nargs=* FaNode call fzf#run({
+\ 'source':  printf('ag --nogroup --column --color "%s"',
+\                   escape(empty(<q-args>) ? '^(?=.)' : <q-args>, '"\')),
+\ 'sink*':    function('<sid>ag_handler'),
+\ 'options': '--ansi --expect=ctrl-t,ctrl-v,ctrl-x --delimiter : --nth 4.. '.
+\            '--multi --bind=ctrl-a:select-all,ctrl-d:deselect-all '.
+\            '--color hl:68,hl+:110',
+\ 'down':    '50%'
+\ })
+
 "Fuzzy find within the current file
 command! -nargs=* Faf call fzf#run({
 \ 'source':  printf('ag --vimgrep "%s" %s',
@@ -183,7 +237,16 @@ command! -nargs=* Faf call fzf#run({
 \            '--color hl:68,hl+:110',
 \ 'down':    '50%'
 \ })
-"
+
+"========================== VIM PRETTIER SETTINGS ==============================
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+let g:ale_open_list = 1
+
+"========================== VIM PRETTIER SETTINGS ==============================
+let g:prettier#autoformat_require_pragma = 0
+let g:prettier#autoformat_config_present = 1
+
 "============================ EASYTAGS SETTINGS ================================
 "let g:easytags_async = 1
 
@@ -200,16 +263,11 @@ command! -nargs=* Faf call fzf#run({
 "map <C-[> :GoReferrers<CR>
 
 "========================== VIM-TERRAFORM SETTINGS =============================
-let g:terraform_fmt_on_save = 1
-let g:terraform_align = 1
-let g:terraform_fold_sections = 1
+"let g:terraform_fmt_on_save = 1
+"let g:terraform_align = 1
+"let g:terraform_fold_sections = 1
 
-"============================= VIM-TEST SETTINGS ===============================
-nmap <silent> t<C-n> :TestNearest<CR>
-nmap <silent> t<C-f> :TestFile<CR>
-nmap <silent> t<C-s> :TestSuite<CR>
-nmap <silent> t<C-l> :TestLast<CR>
-nmap <silent> t<C-g> :TestVisit<CR>
+"=============================== VIM-TEST SETTINGS =============================
 let test#strategy = "dispatch"
 
 "=========================== SYNTASTIC SETTINGS ================================
@@ -221,3 +279,6 @@ let test#strategy = "dispatch"
 "let g:syntastic_auto_loc_list = 1
 "let g:syntastic_check_on_open = 1
 "let g:syntastic_check_on_wq = 0
+
+"=========================== tsuquyomi settings "===============================
+let g:tsuquyomi_definition_split = 3
