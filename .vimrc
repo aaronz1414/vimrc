@@ -120,6 +120,10 @@ set statusline+=%F
     "autocmd BufEnter * highlight ColorColumn ctermbg=0
 "augroup END
 
+"========================= COMMAND ALIASES =====================================
+" vim-fugitive
+command Rmc Git mergetool -y
+
 "============================= KEY MAPPINGS ====================================
 " https://vi.stackexchange.com/questions/7722/how-to-debug-a-mapping
 cnoremap <C-p> <Up>
@@ -150,8 +154,13 @@ nmap <silent> t<C-s> :TestSuite<CR>
 nmap <silent> t<C-l> :TestLast<CR>
 nmap <silent> t<C-g> :TestVisit<CR>
 
-nnoremap <silent> [q :cprevious<CR>
-nnoremap <silent> ]q :cnext<CR>
+"nnoremap <silent> [q :cprevious<CR>
+"nnoremap <silent> ]q :cnext<CR>
+
+" git/vim-fugitive
+"https://vi.stackexchange.com/questions/37139/vim-mapping-diffput-diffget-to-ctrlleft-ctrlright-with-working-buffer-sele
+nnoremap <expr> gdh ":diffget " .. '//2/' .. expand('%') .. " \| diffupdate\<CR>"
+nnoremap <expr> gdb ":diffget " .. '//3/' .. expand('%') .. " \| diffupdate\<CR>"
 
 " easymotion
 nmap z/ <Plug>(incsearch-easymotion-/)
