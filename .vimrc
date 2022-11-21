@@ -31,6 +31,10 @@ Plugin 'dense-analysis/ale'
 Plugin 'easymotion/vim-easymotion'
 Plugin 'haya14busa/incsearch.vim'
 Plugin 'haya14busa/incsearch-easymotion.vim'
+Plugin 'ludovicchabant/vim-gutentags'
+Plugin 'MaxMEllon/vim-jsx-pretty'
+Plugin 'preservim/tagbar'
+
 "Plugin 'puremourning/vimspector'
 
 " Consider installing this for better autocompletion, want to make sure I can
@@ -84,6 +88,8 @@ set cino+=(0
 " Folding Settings
 set foldenable
 set foldmethod=syntax
+"https://stackoverflow.com/questions/8316139/how-to-set-the-default-to-unfolded-when-you-open-a-file
+au BufRead * normal zR 
 
 " https://superuser.com/questions/836781/make-vims-motions-skip-over-folds
 set foldopen-=block
@@ -126,8 +132,14 @@ command Rmc Git mergetool -y
 
 "============================= KEY MAPPINGS ====================================
 " https://vi.stackexchange.com/questions/7722/how-to-debug-a-mapping
-cnoremap <C-p> <Up>
-cnoremap <C-n> <Down>
+
+" Not sure what these ones are for
+"cnoremap <C-p> <Up>
+"cnoremap <C-n> <Down>
+
+" fzf
+nmap <C-p> :FZF<CR>
+nmap <C-s> :Fa<CR>
 
 nnoremap <silent> <Leader>l :exe "vertical resize -3"<CR>
 nnoremap <silent> <Leader>m :exe "vertical resize +3"<CR>
@@ -165,8 +177,11 @@ nnoremap <expr> gdb ":diffget " .. '//3/' .. expand('%') .. " \| diffupdate\<CR>
 " easymotion
 nmap z/ <Plug>(incsearch-easymotion-/)
 nmap z? <Plug>(incsearch-easymotion-?)
+nmap <Leader>w <Plug>(easymotion-w)
 
 map <C-n> :NERDTreeToggle<CR>
+
+nmap <C-l> :TagbarToggle<CR>
 
 "============================ QUICKFIX SETTINGS ================================
 augroup quickfix
