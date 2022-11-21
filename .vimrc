@@ -183,6 +183,9 @@ map <C-n> :NERDTreeToggle<CR>
 
 nmap <C-l> :TagbarToggle<CR>
 
+" Open go to definition in new tab
+:nnoremap <silent><C-]> <C-w><C-]><C-w>T
+
 "============================ QUICKFIX SETTINGS ================================
 augroup quickfix
   autocmd!
