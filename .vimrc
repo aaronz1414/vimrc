@@ -1,47 +1,42 @@
 set nocompatible
 
-"============================= VUNDLE ==========================================
-filetype off " required to setup vundle plugins correctly
+"============================= VIM-PLUG ========================================
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
+call plug#begin()
 
-" Keep Plugin commands between vundle#begin/end.
-call vundle#begin()
+Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-eunuch'
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-commentary'
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'haya14busa/incsearch.vim'
+Plug 'haya14busa/incsearch-easymotion.vim'
 
-" Plugins I've been using
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-dispatch'
-Plugin 'tpope/vim-eunuch'
-Plugin 'scrooloose/nerdtree'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'pangloss/vim-javascript'
-Plugin 'janko/vim-test'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'quramy/tsuquyomi'
-Plugin 'suan/vim-instant-markdown', {'rtp': 'after'}
-Plugin 'prettier/vim-prettier'
-Plugin 'dense-analysis/ale'
-Plugin 'easymotion/vim-easymotion'
-Plugin 'haya14busa/incsearch.vim'
-Plugin 'haya14busa/incsearch-easymotion.vim'
-Plugin 'ludovicchabant/vim-gutentags'
-Plugin 'MaxMEllon/vim-jsx-pretty'
-Plugin 'preservim/tagbar'
+Plug 'pangloss/vim-javascript'
+Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'jparise/vim-graphql'
+Plug 'prettier/vim-prettier'
 
-"Plugin 'puremourning/vimspector'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'puremourning/vimspector'
 
-" Consider installing this for better autocompletion, want to make sure I can
-" use the local version though
-" Plugin 'zxqfl/tabnine-vim'
+Plug 'EdenEast/nightfox.nvim'
+Plug 'sainnhe/everforest'
 
 " Plugins I've used but haven't wanted installed recently
+" Plug 'leafgarland/typescript-vim'
+"Plug 'preservim/tagbar'
+"Plug 'ludovicchabant/vim-gutentags'
+"Plug 'dense-analysis/ale'
+"Plug 'quramy/tsuquyomi'
+"Plug 'suan/vim-instant-markdown', {'rtp': 'after'}
+"Plug 'janko/vim-test'
+"Plugin 'vim-airline/vim-airline'
+"Plugin 'vim-airline/vim-airline-themes'
+" Plugin 'scrooloose/nerdcommenter'
 "Plugin 'hashivim/vim-terraform'
 "Plugin 'valloric/youcompleteme'
 "Plugin 'godlygeek/tabular'
@@ -55,21 +50,19 @@ Plugin 'preservim/tagbar'
 "Plugin 'xolox/vim-easytags'
 "Plugin 'flazz/vim-colorschemes'
 
-call vundle#end()
-
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+call plug#end()
 
 "============================ PERSONAL SETTINGS ================================
 
 filetype plugin on
 syntax on
+
+" Enable mouse
+" set mouse=a
+
+set autoread
+
+set backspace=indent,eol,start
 
 set path+=**
 set nrformats=
@@ -88,13 +81,10 @@ set cino+=(0
 " Folding Settings
 set foldenable
 set foldmethod=syntax
-"https://stackoverflow.com/questions/8316139/how-to-set-the-default-to-unfolded-when-you-open-a-file
-au BufRead * normal zR 
 
 " https://superuser.com/questions/836781/make-vims-motions-skip-over-folds
 set foldopen-=block
 
-"
 " Tab Settings
 set tabstop=2
 set softtabstop=0
@@ -113,14 +103,118 @@ set nocursorcolumn
 set nocursorline
 set norelativenumber
 set t_Co=256
+
+" Colorscheme Settings
+" https://github.com/tmux/tmux/issues/1246
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
+
 set background=dark
+let g:everforest_background = 'medium'
+let g:everforest_better_performance = 1
+
 colorscheme everforest
 
-set statusline+=%F
+"COC
+set pumheight=10
 
 "if !exists("g:syntax_on")
     "syntax enable
 "endif
+
+"============================== STATUSLINE =====================================
+" Statusline docs: https://vimdoc.sourceforge.net/htmldoc/options.html#'statusline'
+
+function! DiagnosticExists() abort
+  let info = get(b:, 'coc_diagnostic_info', {})
+  return !empty(info)
+endfunction
+
+function! DiagnosticExistsWithoutErrors() abort
+  if !DiagnosticExists() | return v:false | endif
+
+  let info = get(b:, 'coc_diagnostic_info', {})
+  return !get(info, 'error', 0)
+        \ && !get(info, 'warning', 0)
+        \ && !get(info, 'information', 0)
+        \ && !get(info, 'hint', 0)
+endfunction
+
+function! GetDiagnosticHeader() abort
+  if DiagnosticExistsWithoutErrors() | return 'No errors! ' | endif
+  return ''
+endfunction
+
+function! GetDiagnosticStatus(name, symbol) abort
+  let info = get(b:, 'coc_diagnostic_info', {})
+  if empty(info) || !get(info, a:name, 0) | return '' | endif
+
+  return a:symbol . info[a:name] . ' '
+endfunction
+
+function! GetDiagnosticSeparator() abort
+  if DiagnosticExists() | return ' | ' | endif
+  return ''
+endfunction
+
+function! GetCocStatus() abort
+  " Use coc#status() if you want COC's formatting for errors and warnings
+  " let cocStatus = coc#status()
+  let cocStatus = get(g:, 'coc_status', '')
+  if !len(cocStatus) | return '' | endif
+  return cocStatus . ' | '
+endfunction
+
+" TODO: Fix background on diagnostics
+set statusline=*
+set statusline+=\ %{GetDiagnosticHeader()}
+set statusline+=%#ERROR#%{GetDiagnosticStatus('error','E')}%*
+set statusline+=%#WARNING#%{GetDiagnosticStatus('warning','W')}%*
+set statusline+=%#INFORMATION#%{GetDiagnosticStatus('information','I')}%*
+set statusline+=%#HINT#%{GetDiagnosticStatus('hint','H')}%*
+set statusline+=%{GetDiagnosticSeparator()}
+set statusline+=%{GetCocStatus()}
+set statusline+=%f
+set laststatus=2
+
+" https://www.reddit.com/r/vim/comments/sby64c/highlight_only_foreground_of_status_line_text/
+let hl_base = 'StatusLine'
+let base_bg = synIDattr(synIDtrans(hlID(hl_base)), 'bg')
+let v:colornames['aaron_statusline_bg'] = base_bg
+
+" hi StatusLine ctermfg=247
+" hi ERROR ctermfg=160
+" hi WARNING ctermfg=178
+" hi INFORMATION ctermfg=20
+" hi HINT ctermfg=107
+hi ERROR guifg=#DE1F1F guibg=aaron_statusline_bg
+hi WARNING guifg=#F0F02D guibg=aaron_statusline_bg
+hi INFORMATION guifg=#4273E5 guibg=aaron_statusline_bg
+hi HINT guifg=#7BD546 guibg=aaron_statusline_bg
+
+"============================ AUTO COMMANDS ====================================
+"https://stackoverflow.com/questions/8316139/how-to-set-the-default-to-unfolded-when-you-open-a-file
+augroup openFolds
+  autocmd!
+  au BufRead * normal zR 
+augroup END
+
+"COC
+augroup coc
+  autocmd!
+  autocmd User CocStatusChange redrawstatus
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup END
+
+"Quickfix list foramtting
+augroup quickfix
+  autocmd!
+  autocmd FileType qf setlocal wrap
+augroup END
 
 "augroup vimrc_autocmds
     "autocmd BufEnter * highlight ColorColumn ctermbg=0
@@ -141,18 +235,12 @@ command Rmc Git mergetool -y
 nmap <C-p> :FZF<CR>
 nmap <C-s> :Fa<CR>
 
-nnoremap <silent> <Leader>l :exe "vertical resize -3"<CR>
-nnoremap <silent> <Leader>m :exe "vertical resize +3"<CR>
-nnoremap <silent> <Leader>s :exe "resize -3"<CR>
-nnoremap <silent> <Leader>b :exe "resize +3"<CR>
+nnoremap <silent> <Leader>vd :exe "vertical resize -5"<CR>
+nnoremap <silent> <Leader>vi :exe "vertical resize +5"<CR>
+nnoremap <silent> <Leader>sd :exe "resize -5"<CR>
+nnoremap <silent> <Leader>si :exe "resize +5"<CR>
 
 nnoremap <silent> <Leader>k :set cursorcolumn!<Bar>set cursorline!<CR>
-
-" tsuquyomi
-autocmd FileType typescript nmap <buffer> <Leader>r <Plug>(TsuquyomiRenameSymbol)
-autocmd FileType typescript nmap <buffer> <Leader>R <Plug>(TsuquyomiRenameSymbolC)
-autocmd FileType typescript nmap <buffer> <Leader>f <Plug>(TsuquyomiReferences)
-autocmd FileType typescript nmap <buffer> <Leader>t : <C-u>echo tsuquyomi#hint()<CR>
 
 " vim-test
 "nmap <silent> <Leader>t :TestNearest<CR>
@@ -178,19 +266,116 @@ nnoremap <expr> gdb ":diffget " .. '//3/' .. expand('%') .. " \| diffupdate\<CR>
 nmap z/ <Plug>(incsearch-easymotion-/)
 nmap z? <Plug>(incsearch-easymotion-?)
 nmap <Leader>w <Plug>(easymotion-w)
+nmap <Leader>b <Plug>(easymotion-b)
 
-map <C-n> :NERDTreeToggle<CR>
+map <silent> <C-n> :NERDTreeToggle<CR>
 
 nmap <C-l> :TagbarToggle<CR>
 
-" Open go to definition in new tab
-:nnoremap <silent><C-]> <C-w><C-]><C-w>T
+" tsuquyomi
+"autocmd FileType typescript nmap <buffer> <Leader>r <Plug>(TsuquyomiRenameSymbol)
+"autocmd FileType typescript nmap <buffer> <Leader>R <Plug>(TsuquyomiRenameSymbolC)
+" autocmd FileType typescript nmap <buffer> <Leader>f <Plug>(TsuquyomiReferences)
+"autocmd FileType typescript nmap <buffer> <Leader>t : <C-u>echo tsuquyomi#hint()<CR>
 
-"============================ QUICKFIX SETTINGS ================================
-augroup quickfix
-  autocmd!
-  autocmd FileType qf setlocal wrap
-augroup END
+" COC
+inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#confirm() : "\<Tab>"
+nmap <silent> <Leader>t <Plug>(coc-type-definition)
+
+nmap <silent> gd <Plug>(coc-declaration)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> ge :CocDiagnostics<CR>
+nmap <Leader>qf  <Plug>(coc-fix-current)
+nnoremap <silent><nowait> <space>d :<C-u>CocList diagnostics<cr>
+
+nmap <silent> <Leader>rn <Plug>(coc-rename)
+nmap <silent> <Leader>re <Plug>(coc-codeaction-refactor)
+xmap <silent> <Leader>re  <Plug>(coc-codeaction-refactor-selected)
+nmap <silent> <Leader>ca  <Plug>(coc-codeaction-cursor)
+xmap <silent> <Leader>ca  <Plug>(coc-codeaction-selected)
+nmap <silent> <Leader>cf  <Plug>(coc-codeaction-source)
+
+nmap <Leader>cle :call ToggleCodeLens()<CR>
+nmap <silent> <Leader>clt :CocCommand document.toggleCodeLens<CR>
+nmap <Leader>cl <Plug>(coc-codelens-action)
+
+function! ToggleCodeLens()
+  let enabled = coc#util#get_config('codeLens')['enable']
+  if enabled
+    call coc#config('codeLens.enable', 0)
+    echo 'Disabled CodeLens'
+  else
+    call coc#config('codeLens.enable', 1)
+    echo 'Enabled CodeLens'
+  endif
+endfunction
+
+" function! DisableCodeLens()
+"   call coc#config('codeLens.enable', 0)
+"   while coc#util#get_config('codeLens')['enable']
+"     sleep 50m
+"   endwhile
+"   call CocActionAsync('runCommand', 'document.toggleCodeLens')
+" endfunction
+
+" function! EnableCodeLens()
+"   call coc#config('codeLens.enable', 1)
+"   while !coc#util#get_config('codeLens')['enable']
+"     sleep 50m
+"   endwhile
+"   call CocActionAsync('runCommand', 'document.toggleCodeLens')
+" endfunction
+
+nnoremap <silent><nowait> <space>c :CocList commands<CR>
+
+nnoremap <silent> K :call ShowDocumentation()<CR>
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+nnoremap <silent> <Leader>hi :call CocAction('showIncomingCalls')<CR>
+nnoremap <silent> <Leader>ho :call CocAction('showOutgoingCalls')<CR>
+nnoremap <silent> <Leader>hti :call CocAction('showSubTypes')<CR>
+nnoremap <silent> <Leader>hto :call CocAction('showSuperTypes')<CR>
+
+nnoremap <silent><nowait> <space>o :call ToggleOutline()<CR>
+function! ToggleOutline() abort
+  let winid = coc#window#find('cocViewId', 'OUTLINE')
+  if winid == -1
+    call CocActionAsync('showOutline', 1)
+  else
+    call coc#window#close(winid)
+  endif
+endfunction
+
+" Vimspector
+nnoremap <Leader>dd :call vimspector#Launch()<CR>
+nnoremap <Leader>de :call vimspector#Reset()<CR>
+nnoremap <Leader>dc :call vimspector#Continue()<CR>
+
+nnoremap <Leader>dt :call vimspector#ToggleBreakpoint()<CR>
+nnoremap <Leader>dT :call vimspector#ClearBreakpoints()<CR>
+
+nmap <Leader>dk <Plug>VimspectorRestart
+nmap <Leader>dh <Plug>VimspectorStepOut
+nmap <Leader>dl <Plug>VimspectorStepInto
+nmap <Leader>dj <Plug>VimspectorStepOver
+
+" Open go to definition in new tab
+" :nnoremap <silent><C-]> <C-w><C-]><C-w>T
+
+"========================== COC SETTINGS "======================================
+set updatetime=300
+set signcolumn=yes
+set tagfunc=CocTagFunc
 
 "========================== NERDTREE SETTINGS ==================================
 let NERDTreeIgnore = ['\.pyc$']
@@ -307,5 +492,8 @@ let test#strategy = "dispatch"
 "let g:syntastic_check_on_open = 1
 "let g:syntastic_check_on_wq = 0
 
-"=========================== tsuquyomi settings "===============================
-let g:tsuquyomi_definition_split = 3
+"=========================== TSUQUYOMI SETTINGS "===============================
+"let g:tsuquyomi_definition_split = 3
+
+"=========================== VIMSPECTOR SETTINGS "===============================
+let g:vimspector_base_dir='/Users/aaron/.vim/plugged/vimspector'
