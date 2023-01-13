@@ -25,6 +25,8 @@ Plug 'puremourning/vimspector'
 
 Plug 'EdenEast/nightfox.nvim'
 Plug 'sainnhe/everforest'
+Plug 'cocopon/iceberg.vim'
+
 
 " Plugins I've used but haven't wanted installed recently
 " Plug 'leafgarland/typescript-vim'
@@ -116,7 +118,7 @@ set background=dark
 let g:everforest_background = 'medium'
 let g:everforest_better_performance = 1
 
-colorscheme everforest
+colorscheme iceberg
 
 "COC
 set pumheight=10
@@ -181,8 +183,21 @@ set statusline+=%f
 set laststatus=2
 
 " https://www.reddit.com/r/vim/comments/sby64c/highlight_only_foreground_of_status_line_text/
-let hl_base = 'StatusLine'
-let base_bg = synIDattr(synIDtrans(hlID(hl_base)), 'bg')
+" https://www.reddit.com/r/vim/comments/ga4xe0/why_use_reverse_for_tui_highlights/
+" Some libraries use the reverse colors as a hack to increase the priority of
+" their highlight group, so this function should check for that. If this
+" doesn't work, then you could try just hardcoding the result of fg# as the
+" statusline background color instead
+function! GetBaseBg() abort
+  let hl_base = 'StatusLine'
+  if synIDattr(synIDtrans(hlID(hl_base)), 'reverse')
+    return synIDattr(synIDtrans(hlID(hl_base)), 'fg#')
+  endif
+
+  return synIDattr(synIDtrans(hlID(hl_base)), 'bg#')
+endfunction
+
+let base_bg = GetBaseBg()
 let v:colornames['aaron_statusline_bg'] = base_bg
 
 " hi StatusLine ctermfg=247
