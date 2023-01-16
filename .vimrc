@@ -1,34 +1,42 @@
 set nocompatible
+let g:polyglot_disabled = ['typescript']
 
 "============================= VIM-PLUG ========================================
-
 call plug#begin()
 
-Plug 'tpope/vim-dispatch'
-Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-eunuch'
-Plug 'scrooloose/nerdtree'
-Plug 'tpope/vim-commentary'
+" Language Functionality
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'sheerun/vim-polyglot'
+Plug 'prettier/vim-prettier'
 
+" Navigation
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/incsearch-easymotion.vim'
 
-Plug 'pangloss/vim-javascript'
-Plug 'MaxMEllon/vim-jsx-pretty'
-Plug 'jparise/vim-graphql'
-Plug 'prettier/vim-prettier'
-
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Utilities
 Plug 'puremourning/vimspector'
+Plug 'tpope/vim-dispatch' " TODO: Set this up to run ts/js tests
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-eunuch'
+Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-commentary' " Might want to go back to nerdcommenter?
 
+" Display
+Plug 'vim-airline/vim-airline'
+Plug 'airblade/vim-gitgutter'
+
+" Colorschemes
 Plug 'EdenEast/nightfox.nvim'
 Plug 'sainnhe/everforest'
 Plug 'cocopon/iceberg.vim'
 
+call plug#end()
 
-" Plugins I've used but haven't wanted installed recently
+"======================= PLUGIN GRAVEYARD ======================================
+" Plug 'pangloss/vim-javascript'
+" Plug 'MaxMEllon/vim-jsx-pretty'
+" Plug 'jparise/vim-graphql'
 " Plug 'leafgarland/typescript-vim'
 "Plug 'preservim/tagbar'
 "Plug 'ludovicchabant/vim-gutentags'
@@ -36,7 +44,6 @@ Plug 'cocopon/iceberg.vim'
 "Plug 'quramy/tsuquyomi'
 "Plug 'suan/vim-instant-markdown', {'rtp': 'after'}
 "Plug 'janko/vim-test'
-"Plugin 'vim-airline/vim-airline'
 "Plugin 'vim-airline/vim-airline-themes'
 " Plugin 'scrooloose/nerdcommenter'
 "Plugin 'hashivim/vim-terraform'
@@ -52,10 +59,7 @@ Plug 'cocopon/iceberg.vim'
 "Plugin 'xolox/vim-easytags'
 "Plugin 'flazz/vim-colorschemes'
 
-call plug#end()
-
 "============================ PERSONAL SETTINGS ================================
-
 filetype plugin on
 syntax on
 
@@ -170,17 +174,16 @@ function! GetCocStatus() abort
   return cocStatus . ' | '
 endfunction
 
-" TODO: Fix background on diagnostics
-set statusline=*
-set statusline+=\ %{GetDiagnosticHeader()}
-set statusline+=%#ERROR#%{GetDiagnosticStatus('error','E')}%*
-set statusline+=%#WARNING#%{GetDiagnosticStatus('warning','W')}%*
-set statusline+=%#INFORMATION#%{GetDiagnosticStatus('information','I')}%*
-set statusline+=%#HINT#%{GetDiagnosticStatus('hint','H')}%*
-set statusline+=%{GetDiagnosticSeparator()}
-set statusline+=%{GetCocStatus()}
-set statusline+=%f
-set laststatus=2
+" set statusline=*
+" set statusline+=\ %{GetDiagnosticHeader()}
+" set statusline+=%#ERROR#%{GetDiagnosticStatus('error','E')}%*
+" set statusline+=%#WARNING#%{GetDiagnosticStatus('warning','W')}%*
+" set statusline+=%#INFORMATION#%{GetDiagnosticStatus('information','I')}%*
+" set statusline+=%#HINT#%{GetDiagnosticStatus('hint','H')}%*
+" set statusline+=%{GetDiagnosticSeparator()}
+" set statusline+=%{GetCocStatus()}
+" set statusline+=%f
+" set laststatus=2
 
 " https://www.reddit.com/r/vim/comments/sby64c/highlight_only_foreground_of_status_line_text/
 " https://www.reddit.com/r/vim/comments/ga4xe0/why_use_reverse_for_tui_highlights/
