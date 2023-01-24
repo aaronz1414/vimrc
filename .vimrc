@@ -1,6 +1,11 @@
 set nocompatible
 let g:polyglot_disabled = ['typescript']
 
+function! Cond(cond, ...)
+  let opts = get(a:000, 0, {})
+  return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
+endfunction
+
 "============================= VIM-PLUG ========================================
 call plug#begin()
 
@@ -8,19 +13,43 @@ call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
 Plug 'prettier/vim-prettier'
+Plug 'nvim-treesitter/nvim-treesitter', Cond(has('nvim'), {'do': ':TSUpdate'})
 
 " Navigation
-Plug 'easymotion/vim-easymotion'
-Plug 'haya14busa/incsearch.vim'
-Plug 'haya14busa/incsearch-easymotion.vim'
+if has('nvim')
+  Plug 'ggandor/leap.nvim'
+else
+  Plug 'easymotion/vim-easymotion'
+  Plug 'haya14busa/incsearch.vim'
+  Plug 'haya14busa/incsearch-easymotion.vim'
+endif
+
+" Debugging
+if has('nvim')
+  Plug 'mfussenegger/nvim-dap'
+  Plug 'rcarriga/nvim-dap-ui'
+  Plug 'mxsdev/nvim-dap-vscode-js'
+else
+  Plug 'puremourning/vimspector', Cond(!has('nvim'))
+endif
 
 " Utilities
-Plug 'puremourning/vimspector'
+Plug 'nvim-lua/plenary.nvim'
 Plug 'tpope/vim-dispatch' " TODO: Set this up to run ts/js tests
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-eunuch'
-Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-commentary' " Might want to go back to nerdcommenter?
+Plug 'tpope/vim-dadbod'
+Plug 'kristijanhusak/vim-dadbod-ui'
+" Call :CocInstall coc-db for https://github.com/kristijanhusak/vim-dadbod-completion
+
+" Files
+if has('nvim')
+  Plug 'nvim-tree/nvim-web-devicons' " optional, for file icons
+  Plug 'nvim-tree/nvim-tree.lua'
+else
+  Plug 'scrooloose/nerdtree'
+endif
 
 " Display
 Plug 'vim-airline/vim-airline'
@@ -62,6 +91,7 @@ call plug#end()
 "============================ PERSONAL SETTINGS ================================
 filetype plugin on
 syntax on
+set nohlsearch
 
 " Enable mouse
 " set mouse=a
@@ -122,7 +152,7 @@ set background=dark
 let g:everforest_background = 'medium'
 let g:everforest_better_performance = 1
 
-colorscheme iceberg
+colorscheme everforest
 
 "COC
 set pumheight=10
@@ -130,6 +160,10 @@ set pumheight=10
 "if !exists("g:syntax_on")
     "syntax enable
 "endif
+
+" dadbod-ui
+let g:db_ui_use_nerd_fonts = 1
+let g:db_ui_execute_on_save = 0
 
 "============================== STATUSLINE =====================================
 " Statusline docs: https://vimdoc.sourceforge.net/htmldoc/options.html#'statusline'
@@ -200,18 +234,18 @@ function! GetBaseBg() abort
   return synIDattr(synIDtrans(hlID(hl_base)), 'bg#')
 endfunction
 
-let base_bg = GetBaseBg()
-let v:colornames['aaron_statusline_bg'] = base_bg
+" let base_bg = GetBaseBg()
+" let v:colornames['aaron_statusline_bg'] = base_bg
 
 " hi StatusLine ctermfg=247
 " hi ERROR ctermfg=160
 " hi WARNING ctermfg=178
 " hi INFORMATION ctermfg=20
 " hi HINT ctermfg=107
-hi ERROR guifg=#DE1F1F guibg=aaron_statusline_bg
-hi WARNING guifg=#F0F02D guibg=aaron_statusline_bg
-hi INFORMATION guifg=#4273E5 guibg=aaron_statusline_bg
-hi HINT guifg=#7BD546 guibg=aaron_statusline_bg
+" hi ERROR guifg=#DE1F1F guibg=aaron_statusline_bg
+" hi WARNING guifg=#F0F02D guibg=aaron_statusline_bg
+" hi INFORMATION guifg=#4273E5 guibg=aaron_statusline_bg
+" hi HINT guifg=#7BD546 guibg=aaron_statusline_bg
 
 "============================ AUTO COMMANDS ====================================
 "https://stackoverflow.com/questions/8316139/how-to-set-the-default-to-unfolded-when-you-open-a-file
@@ -260,25 +294,33 @@ nnoremap <silent> <Leader>si :exe "resize +5"<CR>
 
 nnoremap <silent> <Leader>k :set cursorcolumn!<Bar>set cursorline!<CR>
 
+
 " vim-test
 "nmap <silent> <Leader>t :TestNearest<CR>
 "nmap <silent> <Leader>T :TestFile<CR>
 "nmap <silent> <Leader>a :TestSuite<CR>
 "nmap <silent> <Leader>p :TestLast<CR>
 "nmap <silent> <Leader>g :TestVisit<CR>
-nmap <silent> t<C-n> :TestNearest<CR>
-nmap <silent> t<C-f> :TestFile<CR>
-nmap <silent> t<C-s> :TestSuite<CR>
-nmap <silent> t<C-l> :TestLast<CR>
-nmap <silent> t<C-g> :TestVisit<CR>
+" nmap <silent> t<C-n> :TestNearest<CR>
+" nmap <silent> t<C-f> :TestFile<CR>
+" nmap <silent> t<C-s> :TestSuite<CR>
+" nmap <silent> t<C-l> :TestLast<CR>
+" nmap <silent> t<C-g> :TestVisit<CR>
 
 "nnoremap <silent> [q :cprevious<CR>
 "nnoremap <silent> ]q :cnext<CR>
+
+" dadbod-ui
+nnoremap <Leader>pg :tabnew \| DBUI<CR>
+
+" git/gitgutter
+nmap <Leader>gt :GitGutterBufferToggle<CR>
 
 " git/vim-fugitive
 "https://vi.stackexchange.com/questions/37139/vim-mapping-diffput-diffget-to-ctrlleft-ctrlright-with-working-buffer-sele
 nnoremap <expr> gdh ":diffget " .. '//2/' .. expand('%') .. " \| diffupdate\<CR>"
 nnoremap <expr> gdb ":diffget " .. '//3/' .. expand('%') .. " \| diffupdate\<CR>"
+nmap <Leader>gd :Gvidffsplit<CR>
 
 " easymotion
 nmap z/ <Plug>(incsearch-easymotion-/)
@@ -286,7 +328,11 @@ nmap z? <Plug>(incsearch-easymotion-?)
 nmap <Leader>w <Plug>(easymotion-w)
 nmap <Leader>b <Plug>(easymotion-b)
 
-map <silent> <C-n> :NERDTreeToggle<CR>
+if has('nvim')
+  map <silent> <C-n> :NvimTreeToggle<CR>
+else
+  map <silent> <C-n> :NERDTreeToggle<CR>
+endif
 
 nmap <C-l> :TagbarToggle<CR>
 
@@ -300,7 +346,6 @@ nmap <C-l> :TagbarToggle<CR>
 inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#confirm() : "\<Tab>"
 nmap <silent> <Leader>t <Plug>(coc-type-definition)
 
-nmap <silent> gd <Plug>(coc-declaration)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
@@ -375,20 +420,23 @@ function! ToggleOutline() abort
 endfunction
 
 " Vimspector
-nnoremap <Leader>dd :call vimspector#Launch()<CR>
-nnoremap <Leader>de :call vimspector#Reset()<CR>
-nnoremap <Leader>dc :call vimspector#Continue()<CR>
+if !has('nvim')
+  nnoremap <Leader>dd :call vimspector#Launch()<CR>
+  nnoremap <Leader>de :call vimspector#Reset()<CR>
+  nnoremap <Leader>dc :call vimspector#Continue()<CR>
 
-nnoremap <Leader>dt :call vimspector#ToggleBreakpoint()<CR>
-nnoremap <Leader>dT :call vimspector#ClearBreakpoints()<CR>
+  nnoremap <Leader>dt :call vimspector#ToggleBreakpoint()<CR>
+  nnoremap <Leader>dT :call vimspector#ClearBreakpoints()<CR>
 
-nmap <Leader>dk <Plug>VimspectorRestart
-nmap <Leader>dh <Plug>VimspectorStepOut
-nmap <Leader>dl <Plug>VimspectorStepInto
-nmap <Leader>dj <Plug>VimspectorStepOver
+  nmap <Leader>dk <Plug>VimspectorRestart
+  nmap <Leader>dh <Plug>VimspectorStepOut
+  nmap <Leader>dl <Plug>VimspectorStepInto
+  nmap <Leader>dj <Plug>VimspectorStepOver
+endif
 
 " Open go to definition in new tab
-" :nnoremap <silent><C-]> <C-w><C-]><C-w>T
+:nnoremap <silent> gd <C-w><C-]><C-w>T
+" nmap <silent> gd <Plug>(coc-definition)
 
 "========================== COC SETTINGS "======================================
 set updatetime=300
@@ -513,5 +561,81 @@ let test#strategy = "dispatch"
 "=========================== TSUQUYOMI SETTINGS "===============================
 "let g:tsuquyomi_definition_split = 3
 
-"=========================== VIMSPECTOR SETTINGS "===============================
+"=========================== VIMSPECTOR SETTINGS "==============================
 let g:vimspector_base_dir='/Users/aaron/.vim/plugged/vimspector'
+
+"===============================================================================
+"=========================== NEOVIM ONLY SETTINGS ""============================
+"===============================================================================
+if has('nvim')
+lua <<EOF
+require('leap').add_default_mappings()
+
+-- disable netrw at the very start of your init.lua (strongly advised)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- set termguicolors to enable highlight groups
+vim.opt.termguicolors = true
+
+-- empty setup using defaults
+require("nvim-tree").setup()
+
+require'nvim-web-devicons'.setup {
+  default = true;
+}
+
+require("dapui").setup()
+
+local dap, dapui = require("dap"), require("dapui")
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+
+require("dap-vscode-js").setup({
+  debugger_path = "/Users/aaron/opt/vscode-js-debug", -- Path to vscode-js-debug installation.
+  adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' }, -- which adapters to register in nvim-dap
+})
+
+for _, language in ipairs({ "typescript", "typescriptreact", "javascript", "javascriptreact" }) do
+  require("dap").configurations[language] = {
+    {
+      type = "pwa-node",
+      request = "launch",
+      name = "Launch file",
+      program = "${file}",
+      cwd = "${workspaceFolder}",
+      sourceMaps = true,
+    },
+    {
+      type = "pwa-node",
+      request = "attach",
+      name = "Attach",
+      processId = require'dap.utils'.pick_process,
+      cwd = "${workspaceFolder}",
+      sourceMaps = true,
+    },
+    {
+      type = "pwa-node",
+      name = "Run Jest Current File",
+      request = "launch",
+      runtimeExecutable = "node",
+      runtimeArgs = {
+        "${workspaceFolder}/node_modules/jest/bin/jest.js",
+        "--runInBand",
+        "${file}",
+      },
+      console = "integratedTerminal",
+      internalConsoleOptions = "neverOpen",
+      sourceMaps = true,
+    }
+  }
+end
+
+vim.keymap.set('n', '<leader>dc', function() require('dap').continue() end)
+vim.keymap.set('n', '<leader>dl', function() require('dap').run_last() end)
+vim.keymap.set('n', '<leader>db', function() require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<leader>de', function() require('dapui').close() end)
+
+EOF
+endif
