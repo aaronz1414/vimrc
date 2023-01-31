@@ -44,16 +44,22 @@ else
   Plug 'puremourning/vimspector', Cond(!has('nvim'))
 endif
 
-" Editing Utilities
+" Editing
 Plug 'kylechui/nvim-surround', Cond(has('nvim'), {'tag': '*'})
 Plug 'tpope/vim-commentary' " Might want to go back to nerdcommenter?
 
+" Git
+Plug 'tpope/vim-fugitive'
+if has('nvim')
+  Plug 'lewis6991/gitsigns.nvim'
+else
+  Plug 'airblade/vim-gitgutter'
+endif
+
 " Other Utilities
-Plug 'karb94/neoscroll.nvim'
 Plug 'tpope/vim-repeat'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'tpope/vim-dispatch' " TODO: Set this up to run ts/js tests
-Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
@@ -69,7 +75,7 @@ endif
 
 " Display
 Plug 'vim-airline/vim-airline'
-Plug 'airblade/vim-gitgutter'
+Plug 'karb94/neoscroll.nvim'
 
 " Colorschemes
 Plug 'EdenEast/nightfox.nvim'
@@ -623,6 +629,47 @@ require'nvim-web-devicons'.setup {
 require('neoscroll').setup({
   -- All these keys will be mapped to their corresponding default scrolling animation
   mappings = {'<C-u>', '<C-d>', '<C-b>', '<C-f>'},
+})
+
+require('gitsigns').setup({
+  on_attach = function(bufnr)
+      local gs = package.loaded.gitsigns
+
+      local function map(mode, l, r, opts)
+        opts = opts or {}
+        opts.buffer = bufnr
+        vim.keymap.set(mode, l, r, opts)
+      end
+
+      -- Navigation
+      map('n', ']c', function()
+        if vim.wo.diff then return ']c' end
+        vim.schedule(function() gs.next_hunk() end)
+        return '<Ignore>'
+      end, {expr=true})
+
+      map('n', '[c', function()
+        if vim.wo.diff then return '[c' end
+        vim.schedule(function() gs.prev_hunk() end)
+        return '<Ignore>'
+      end, {expr=true})
+
+      -- Actions
+      map({'n', 'v'}, '<leader>hs', ':Gitsigns stage_hunk<CR>')
+      map({'n', 'v'}, '<leader>hr', ':Gitsigns reset_hunk<CR>')
+      map('n', '<leader>hS', gs.stage_buffer)
+      map('n', '<leader>hu', gs.undo_stage_hunk)
+      map('n', '<leader>hR', gs.reset_buffer)
+      map('n', '<leader>hp', gs.preview_hunk)
+      map('n', '<leader>hb', function() gs.blame_line{full=true} end)
+      map('n', '<leader>tb', gs.toggle_current_line_blame)
+      map('n', '<leader>hd', gs.diffthis)
+      map('n', '<leader>hD', function() gs.diffthis('~') end)
+      map('n', '<leader>td', gs.toggle_deleted)
+
+      -- Text object
+      map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+    end
 })
 
 -- require("neodev").setup({
