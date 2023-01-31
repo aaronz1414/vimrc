@@ -9,11 +9,21 @@ endfunction
 "============================= VIM-PLUG ========================================
 call plug#begin()
 
+Plug 'williamboman/mason.nvim'
+
 " Language Functionality
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
 Plug 'prettier/vim-prettier'
 Plug 'nvim-treesitter/nvim-treesitter', Cond(has('nvim'), {'do': ':TSUpdate'})
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Installed coc.nvim plugins
+" :CocInstall @yaegassy/coc-tailwindcss3
+" :CocInstall coc-tsserver
+" :CocInstall coc-json
+" :CocInstall coc-styled-components
+" :CocInstall coc-snippets
+" :CocInstall coc-eslint
+" :CocInstall coc-db
 
 " Navigation
 if has('nvim')
@@ -28,17 +38,23 @@ endif
 if has('nvim')
   Plug 'mfussenegger/nvim-dap'
   Plug 'rcarriga/nvim-dap-ui'
+  Plug 'folke/neodev.nvim'
   Plug 'mxsdev/nvim-dap-vscode-js'
 else
   Plug 'puremourning/vimspector', Cond(!has('nvim'))
 endif
 
-" Utilities
+" Editing Utilities
+Plug 'kylechui/nvim-surround', Cond(has('nvim'), {'tag': '*'})
+Plug 'tpope/vim-commentary' " Might want to go back to nerdcommenter?
+
+" Other Utilities
+Plug 'karb94/neoscroll.nvim'
+Plug 'tpope/vim-repeat'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'tpope/vim-dispatch' " TODO: Set this up to run ts/js tests
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-commentary' " Might want to go back to nerdcommenter?
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 " Call :CocInstall coc-db for https://github.com/kristijanhusak/vim-dadbod-completion
@@ -435,7 +451,9 @@ if !has('nvim')
 endif
 
 " Open go to definition in new tab
-:nnoremap <silent> gd <C-w><C-]><C-w>T
+:nnoremap <silent> gdt <C-w><C-]><C-w>T
+:nnoremap <silent> gds <C-w><C-]>
+:nnoremap <silent> gdv <C-w>v<C-]>
 " nmap <silent> gd <Plug>(coc-definition)
 
 "========================== COC SETTINGS "======================================
@@ -569,6 +587,8 @@ let g:vimspector_base_dir='/Users/aaron/.vim/plugged/vimspector'
 "===============================================================================
 if has('nvim')
 lua <<EOF
+require("mason").setup()
+
 require('leap').add_default_mappings()
 
 -- disable netrw at the very start of your init.lua (strongly advised)
@@ -581,24 +601,63 @@ vim.opt.termguicolors = true
 -- empty setup using defaults
 require("nvim-tree").setup()
 
+require("nvim-surround").setup({
+  keymaps = {
+    insert = "<C-g>z",
+    insert_line = "<C-g>Z",
+    normal = "yz",
+    normal_cur = "yzz",
+    normal_line = "yZ",
+    normal_cur_line = "yZZ",
+    visual = "Z",
+    visual_line = "gZ",
+    delete = "dz",
+    change = "cz",
+  },
+})
+
 require'nvim-web-devicons'.setup {
   default = true;
 }
 
-require("dapui").setup()
+require('neoscroll').setup({
+  -- All these keys will be mapped to their corresponding default scrolling animation
+  mappings = {'<C-u>', '<C-d>', '<C-b>', '<C-f>'},
+})
+
+-- require("neodev").setup({
+--   library = { plugins = { "nvim-dap-ui" }, types = true },
+-- })
 
 local dap, dapui = require("dap"), require("dapui")
+dapui.setup()
+
 dap.listeners.after.event_initialized["dapui_config"] = function()
   dapui.open()
 end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
+
+dap.adapters.chrome = {    
+  -- executable: launch the remote debug adapter - server: connect to an already running debug adapter    
+  type = "executable",    
+  -- command to launch the debug adapter - used only on executable type    
+  command = "node",    
+  args = { os.getenv("HOME") .. "/.vim/plugged/vimspector/gadgets/macos/debugger-for-chrome/out/src/chromeDebug.js" }    
+}
 
 require("dap-vscode-js").setup({
   debugger_path = "/Users/aaron/opt/vscode-js-debug", -- Path to vscode-js-debug installation.
-  adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' }, -- which adapters to register in nvim-dap
+  adapters = { 'pwa-node', 'pwa-chrome' }, -- which adapters to register in nvim-dap
 })
 
+-- https://alpha2phi.medium.com/neovim-for-beginners-javascript-typescript-debugging-bd0fc8e16657
 for _, language in ipairs({ "typescript", "typescriptreact", "javascript", "javascriptreact" }) do
-  require("dap").configurations[language] = {
+  dap.configurations[language] = {
     {
       type = "pwa-node",
       request = "launch",
@@ -610,10 +669,40 @@ for _, language in ipairs({ "typescript", "typescriptreact", "javascript", "java
     {
       type = "pwa-node",
       request = "attach",
-      name = "Attach",
+      name = "Attach to Node Server",
       processId = require'dap.utils'.pick_process,
       cwd = "${workspaceFolder}",
       sourceMaps = true,
+    },
+    -- TODO: Get chrome working for dap-vscode-js
+    -- {
+    --   type = "pwa-chrome",
+    --   name = "Attach to Chrome",
+    --   request = "attach",
+    --   -- program = "${file}",
+    --   cwd = vim.fn.getcwd(),
+    --   sourceMaps = true,
+    --   protocol = "inspector",
+    --   port = 9222,
+    --   webRoot = "${workspaceFolder}",
+    -- },
+    -- {
+    --   type = "pwa-chrome",
+    --   request = "launch",
+    --   name = "Launch Dashboard",
+    --   url = "http://localhost:3000",
+    --   -- webRoot = "${workspaceRoot}",
+    -- },
+    {
+        type = "chrome",
+        request = "attach",
+        name = "Attach Chrome",
+        program = "${file}",
+        cwd = vim.fn.getcwd(),
+        sourceMaps = true,
+        protocol = "inspector",
+        port = 9222,
+        webRoot = "${workspaceFolder}"
     },
     {
       type = "pwa-node",
@@ -624,6 +713,18 @@ for _, language in ipairs({ "typescript", "typescriptreact", "javascript", "java
         "${workspaceFolder}/node_modules/jest/bin/jest.js",
         "--runInBand",
         "${file}",
+      },
+      console = "integratedTerminal",
+      internalConsoleOptions = "neverOpen",
+      sourceMaps = true,
+    },
+    {
+      type = "pwa-node",
+      name = "Run Mocha All Tests",
+      request = "launch",
+      runtimeExecutable = "node",
+      runtimeArgs = {
+        "${workspaceFolder}/node_modules/mocha/bin/mocha",
       },
       console = "integratedTerminal",
       internalConsoleOptions = "neverOpen",
