@@ -15,8 +15,10 @@ Plug 'williamboman/mason.nvim'
 Plug 'sheerun/vim-polyglot'
 Plug 'prettier/vim-prettier'
 Plug 'nvim-treesitter/nvim-treesitter', Cond(has('nvim'), {'do': ':TSUpdate'})
+" Plug 'windwp/nvim-ts-autotag'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" Installed coc.nvim plugins
+Plug 'danielvolchek/tailiscope.nvim'
+" Installed coc.nvim plugins with the following commands
 " :CocInstall @yaegassy/coc-tailwindcss3
 " :CocInstall coc-tsserver
 " :CocInstall coc-json
@@ -24,6 +26,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " :CocInstall coc-snippets
 " :CocInstall coc-eslint
 " :CocInstall coc-db
+" :CocInstall coc-pairs
 
 " Navigation
 if has('nvim')
@@ -69,6 +72,8 @@ Plug 'kristijanhusak/vim-dadbod-ui'
 if has('nvim')
   Plug 'nvim-tree/nvim-web-devicons' " optional, for file icons
   Plug 'nvim-tree/nvim-tree.lua'
+  Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+  Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 else
   Plug 'scrooloose/nerdtree'
 endif
@@ -115,8 +120,17 @@ filetype plugin on
 syntax on
 set nohlsearch
 
-" Enable mouse
-" set mouse=a
+nnoremap <space> <Nop>
+let mapleader=" "
+
+nnoremap <C-@> <C-[>
+
+nnoremap gp "+p
+nnoremap gy "+y
+xnoremap gy "+y
+
+" Disable mouse
+set mouse=
 
 set autoread
 
@@ -306,8 +320,8 @@ command Rmc Git mergetool -y
 "cnoremap <C-n> <Down>
 
 " fzf
-nmap <C-p> :FZF<CR>
-nmap <C-s> :Fa<CR>
+" nmap <C-p> :FZF<CR>
+" nmap <C-s> :Fa<CR>
 
 nnoremap <silent> <Leader>vd :exe "vertical resize -5"<CR>
 nnoremap <silent> <Leader>vi :exe "vertical resize +5"<CR>
@@ -315,6 +329,13 @@ nnoremap <silent> <Leader>sd :exe "resize -5"<CR>
 nnoremap <silent> <Leader>si :exe "resize +5"<CR>
 
 nnoremap <silent> <Leader>k :set cursorcolumn!<Bar>set cursorline!<CR>
+
+" Easier keys for marks
+nnoremap ' `
+nnoremap <silent> gmt :tabnew<CR>`
+nnoremap <silent> gmx <C-w>s`
+nnoremap <silent> gmv <C-w>v`
+" nnoremap <Leader>m m
 
 
 " vim-test
@@ -457,9 +478,9 @@ if !has('nvim')
 endif
 
 " Open go to definition in new tab
-:nnoremap <silent> gdt <C-w><C-]><C-w>T
-:nnoremap <silent> gds <C-w><C-]>
-:nnoremap <silent> gdv <C-w>v<C-]>
+nnoremap <silent> gdt <C-w><C-]><C-w>T
+nnoremap <silent> gdx <C-w><C-]>
+nnoremap <silent> gdv <C-w>v<C-]>
 " nmap <silent> gd <Plug>(coc-definition)
 
 "========================== COC SETTINGS "======================================
@@ -625,6 +646,32 @@ require("nvim-surround").setup({
 require'nvim-web-devicons'.setup {
   default = true;
 }
+
+-- TODO: Not working
+-- https://github.com/windwp/nvim-ts-autotag/issues/64
+-- require('nvim-treesitter.configs').setup({
+--   autotag = {
+--     enable = true,
+--     filetypes = { "html", "xml", "php", "javascriptreact", "javascript", "typescriptreact", "typescript", "js", "jsx", "ts", "tsx" },
+--   },
+-- })
+
+require('telescope').setup{
+  defaults = {
+    wrap_results = true
+  }
+}
+
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+-- vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+vim.keymap.set('n', '<leader>fm', builtin.marks, {})
+vim.keymap.set("n", "<leader>fdt", "<cmd>Telescope tailiscope categories<cr>")
+
+require('telescope').load_extension('fzf')
+require('telescope').load_extension('tailiscope')
 
 require('neoscroll').setup({
   -- All these keys will be mapped to their corresponding default scrolling animation
