@@ -617,6 +617,7 @@ lua <<EOF
 require("mason").setup()
 
 require('leap').add_default_mappings()
+require('leap').opts.safe_labels = { "s", "f", "n", "u", "t", "/" }
 
 -- disable netrw at the very start of your init.lua (strongly advised)
 vim.g.loaded_netrw = 1
