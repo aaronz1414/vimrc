@@ -347,7 +347,7 @@ onoremap ab <Nop>
 " Current line to previous or next brace
 vnoremap <silent> ib{ :<C-U>normal! V[{j<CR>
 vnoremap <silent> ie} :<C-U>normal! V]}k<CR>
-omap <silent> ib{ :normal Vib}<CR>
+omap <silent> ib{ :normal Vib{<CR>
 omap <silent> ie} :normal Vie}<CR>
 vnoremap <silent> ab{ :<C-U>normal! V[{<CR>
 vnoremap <silent> ae} :<C-U>normal! V]}<CR>
