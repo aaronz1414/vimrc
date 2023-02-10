@@ -27,6 +27,7 @@ Plug 'danielvolchek/tailiscope.nvim'
 " :CocInstall coc-eslint
 " :CocInstall coc-db
 " :CocInstall coc-pairs
+" :CocInstall coc-react-refactor
 
 " Navigation
 if has('nvim')
@@ -119,15 +120,6 @@ call plug#end()
 filetype plugin on
 syntax on
 set nohlsearch
-
-nnoremap <space> <Nop>
-let mapleader=" "
-
-nnoremap <C-@> <C-[>
-
-nnoremap gp "+p
-nnoremap gy "+y
-xnoremap gy "+y
 
 " Disable mouse
 set mouse=
@@ -315,9 +307,64 @@ command Rmc Git mergetool -y
 "============================= KEY MAPPINGS ====================================
 " https://vi.stackexchange.com/questions/7722/how-to-debug-a-mapping
 
-" Not sure what these ones are for
-"cnoremap <C-p> <Up>
-"cnoremap <C-n> <Down>
+nnoremap <space> <Nop>
+let mapleader=" "
+
+nnoremap <C-@> <C-[>
+
+nnoremap gp "+p
+nnoremap gy "+y
+xnoremap gy "+y
+
+" https://www.reddit.com/r/vim/comments/gk4v52/how_to_navigate_html_better/
+" Next closing tag
+nnoremap <silent> ]t /\/>\\|<\/[a-zA-Z0-9]<CR>
+vnoremap <silent> ]t /\/>\\|<\/[a-zA-Z0-9]<CR>
+onoremap <silent> ]t /\/>\\|<\/[a-zA-Z0-9]<CR>
+" Previous opening tag
+nnoremap <silent> [t ?<[a-zA-Z0-9]<CR>
+vnoremap <silent> [t ?<[a-zA-Z0-9]<CR>
+onoremap <silent> [t ?<[a-zA-Z0-9]<CR>
+
+" Custom text objects
+" https://vim.fandom.com/wiki/Creating_new_text_objects
+"
+" ib/ab is redundant with i)/a) (https://neovim.io/doc/user/motion.html#object-select),
+" so we'll turn it off to make sure it doesn't
+" interfere with our goto previous blocks. We use b and e here since it's
+" similar to the b and e word motions
+vnoremap ib <Nop>
+onoremap ib <Nop>
+vnoremap ab <Nop>
+onoremap ab <Nop>
+
+" Current line to previous or next brace
+vnoremap <silent> ib{ :<C-U>normal! V[{j<CR>
+vnoremap <silent> ie} :<C-U>normal! V]}k<CR>
+omap <silent> ib{ :normal Vib}<CR>
+omap <silent> ie} :normal Vie}<CR>
+vnoremap <silent> ab{ :<C-U>normal! V[{<CR>
+vnoremap <silent> ae} :<C-U>normal! V]}<CR>
+omap <silent> ab{ :normal Vab}<CR>
+omap <silent> ae} :normal Vae}<CR>
+
+" Current line to previous opening tag or next closing tag (requires
+" next/previous tag mappings above)
+vmap <silent> ibt :<Esc>V[tj
+vmap <silent> iet :<Esc>V]tk
+omap <silent> ibt :normal Vibt<CR>
+omap <silent> iet :normal Viet<CR>
+vmap <silent> abt :<Esc>V[t
+vmap <silent> aet :<Esc>V]t
+omap <silent> abt :normal Vabt<CR>
+omap <silent> aet :normal Vaet<CR>
+
+" Current line to beginning or end of function. Only works for
+" structured languages https://neovim.io/doc/user/motion.html#various-motions
+vnoremap <silent> ibf :<C-U>normal! V[mj<CR>
+vnoremap <silent> ief :<C-U>normal! V]Mk<CR>
+omap <silent> ibf :normal Vibf<CR>
+omap <silent> ief :normal Vief<CR>
 
 " fzf
 " nmap <C-p> :FZF<CR>
@@ -391,6 +438,7 @@ nmap <silent> <Leader>t <Plug>(coc-type-definition)
 
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gk <Plug>(coc-type-definition)
 
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
@@ -831,6 +879,11 @@ end
 vim.keymap.set('n', '<leader>dc', function() require('dap').continue() end)
 vim.keymap.set('n', '<leader>dl', function() require('dap').run_last() end)
 vim.keymap.set('n', '<leader>db', function() require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<leader>dB', function() require('dap').clear_breakpoints() end)
+vim.keymap.set('n', '<leader>dn', function() require('dap').step_over() end)
+vim.keymap.set('n', '<leader>di', function() require('dap').step_into() end)
+vim.keymap.set('n', '<leader>do', function() require('dap').step_out() end)
+vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
 vim.keymap.set('n', '<leader>de', function() require('dapui').close() end)
 
 EOF
