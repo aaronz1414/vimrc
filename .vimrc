@@ -38,6 +38,9 @@ else
   Plug 'haya14busa/incsearch-easymotion.vim'
 endif
 
+" Tmux
+Plug 'christoomey/vim-tmux-navigator'
+
 " Debugging
 if has('nvim')
   Plug 'mfussenegger/nvim-dap'
