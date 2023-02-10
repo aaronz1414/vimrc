@@ -196,6 +196,9 @@ set pumheight=10
 let g:db_ui_use_nerd_fonts = 1
 let g:db_ui_execute_on_save = 0
 
+" vim-tmux-navigator
+let  g:tmux_navigator_no_wrap = 1
+
 "============================== STATUSLINE =====================================
 " Statusline docs: https://vimdoc.sourceforge.net/htmldoc/options.html#'statusline'
 
