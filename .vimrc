@@ -71,6 +71,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 " Call :CocInstall coc-db for https://github.com/kristijanhusak/vim-dadbod-completion
+Plug 'rest-nvim/rest.nvim'
 
 " Files
 if has('nvim')
@@ -85,6 +86,7 @@ endif
 " Display
 Plug 'vim-airline/vim-airline'
 Plug 'karb94/neoscroll.nvim'
+Plug 'stevearc/dressing.nvim'
 
 " Colorschemes
 Plug 'EdenEast/nightfox.nvim'
@@ -183,7 +185,7 @@ set background=dark
 let g:everforest_background = 'medium'
 let g:everforest_better_performance = 1
 
-colorscheme everforest
+colorscheme duskfox
 
 "COC
 set pumheight=10
@@ -316,8 +318,6 @@ command Rmc Git mergetool -y
 nnoremap <space> <Nop>
 let mapleader=" "
 
-nnoremap <C-@> <C-[>
-
 nnoremap gp "+p
 nnoremap gy "+y
 xnoremap gy "+y
@@ -410,13 +410,15 @@ nnoremap <silent> gmv <C-w>v`
 nnoremap <Leader>pg :tabnew \| DBUI<CR>
 
 " git/gitgutter
-nmap <Leader>gt :GitGutterBufferToggle<CR>
+" nmap <Leader>gt :GitGutterBufferToggle<CR>
 
 " git/vim-fugitive
 "https://vi.stackexchange.com/questions/37139/vim-mapping-diffput-diffget-to-ctrlleft-ctrlright-with-working-buffer-sele
 nnoremap <expr> gdh ":diffget " .. '//2/' .. expand('%') .. " \| diffupdate\<CR>"
 nnoremap <expr> gdb ":diffget " .. '//3/' .. expand('%') .. " \| diffupdate\<CR>"
 nmap <Leader>gd :Gvidffsplit<CR>
+nmap <Leader>gc :Git commit -am ''<Left>
+nmap <Leader>gi :Git status<CR>
 
 " easymotion
 nmap z/ <Plug>(incsearch-easymotion-/)
@@ -442,9 +444,9 @@ nmap <C-l> :TagbarToggle<CR>
 inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#confirm() : "\<Tab>"
 nmap <silent> <Leader>t <Plug>(coc-type-definition)
 
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-nmap <silent> gk <Plug>(coc-type-definition)
+nmap <silent> gi mL \| <Plug>(coc-implementation)
+nmap <silent> gr mL \| <Plug>(coc-references)
+nmap <silent> gk mL \| <Plug>(coc-type-definition)
 
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
@@ -474,23 +476,23 @@ function! ToggleCodeLens()
   endif
 endfunction
 
-" function! DisableCodeLens()
-"   call coc#config('codeLens.enable', 0)
-"   while coc#util#get_config('codeLens')['enable']
-"     sleep 50m
-"   endwhile
-"   call CocActionAsync('runCommand', 'document.toggleCodeLens')
-" endfunction
+function! DisableCodeLens()
+  call coc#config('codeLens.enable', 0)
+  while coc#util#get_config('codeLens')['enable']
+    sleep 50m
+  endwhile
+  call CocActionAsync('runCommand', 'document.toggleCodeLens')
+endfunction
 
-" function! EnableCodeLens()
-"   call coc#config('codeLens.enable', 1)
-"   while !coc#util#get_config('codeLens')['enable']
-"     sleep 50m
-"   endwhile
-"   call CocActionAsync('runCommand', 'document.toggleCodeLens')
-" endfunction
+function! EnableCodeLens()
+  call coc#config('codeLens.enable', 1)
+  while !coc#util#get_config('codeLens')['enable']
+    sleep 50m
+  endwhile
+  call CocActionAsync('runCommand', 'document.toggleCodeLens')
+endfunction
 
-nnoremap <silent><nowait> <space>c :CocList commands<CR>
+nnoremap <silent><nowait> <Leader>cc :CocList commands<CR>
 
 nnoremap <silent> K :call ShowDocumentation()<CR>
 function! ShowDocumentation()
@@ -536,6 +538,9 @@ nnoremap <silent> gdt <C-w><C-]><C-w>T
 nnoremap <silent> gdx <C-w><C-]>
 nnoremap <silent> gdv <C-w>v<C-]>
 " nmap <silent> gd <Plug>(coc-definition)
+
+" rest.nvim
+nmap <silent> <Leader>mr <Plug>RestNvim
 
 "========================== COC SETTINGS "======================================
 set updatetime=300
@@ -698,6 +703,10 @@ require("nvim-surround").setup({
   },
 })
 
+require('rest-nvim').setup({
+  result_split_horizontal = true,
+})
+
 require'nvim-web-devicons'.setup {
   default = true;
 }
@@ -719,7 +728,7 @@ require('telescope').setup{
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fw', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 -- vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 vim.keymap.set('n', '<leader>fm', builtin.marks, {})
@@ -757,22 +766,49 @@ require('gitsigns').setup({
       end, {expr=true})
 
       -- Actions
-      map({'n', 'v'}, '<leader>hs', ':Gitsigns stage_hunk<CR>')
-      map({'n', 'v'}, '<leader>hr', ':Gitsigns reset_hunk<CR>')
-      map('n', '<leader>hS', gs.stage_buffer)
-      map('n', '<leader>hu', gs.undo_stage_hunk)
-      map('n', '<leader>hR', gs.reset_buffer)
-      map('n', '<leader>hp', gs.preview_hunk)
-      map('n', '<leader>hb', function() gs.blame_line{full=true} end)
-      map('n', '<leader>tb', gs.toggle_current_line_blame)
-      map('n', '<leader>hd', gs.diffthis)
-      map('n', '<leader>hD', function() gs.diffthis('~') end)
-      map('n', '<leader>td', gs.toggle_deleted)
+      map({'n', 'v'}, '<leader>gs', ':Gitsigns stage_hunk<CR>')
+      map({'n', 'v'}, '<leader>gr', ':Gitsigns reset_hunk<CR>')
+      map('n', '<leader>gS', gs.stage_buffer)
+      map('n', '<leader>gu', gs.undo_stage_hunk)
+      map('n', '<leader>gR', gs.reset_buffer)
+      map('n', '<leader>gp', gs.preview_hunk)
+      map('n', '<leader>gd', gs.diffthis)
+      map('n', '<leader>gD', function() gs.diffthis('~') end)
+      map('n', '<leader>gb', function() gs.blame_line{full=true} end)
+      map('n', '<leader>gtb', gs.toggle_current_line_blame)
+      map('n', '<leader>gtd', gs.toggle_deleted)
 
       -- Text object
       map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
     end
 })
+
+require'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all" (the four listed parsers should always be installed)
+  ensure_installed = { "lua", "help" },
+
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
+
+  -- Automatically install missing parsers when entering buffer
+  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+  auto_install = false,
+
+  ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
+  -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+
+  highlight = {
+    enable = true,
+
+    disable = { "vim" },
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
 
 -- require("neodev").setup({
 --   library = { plugins = { "nvim-dap-ui" }, types = true },
@@ -819,7 +855,8 @@ for _, language in ipairs({ "typescript", "typescriptreact", "javascript", "java
       type = "pwa-node",
       request = "attach",
       name = "Attach to Node Server",
-      processId = require'dap.utils'.pick_process,
+      -- processId = require'dap.utils'.pick_process,
+      port = 9222,
       cwd = "${workspaceFolder}",
       sourceMaps = true,
     },
