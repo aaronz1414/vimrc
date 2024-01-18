@@ -18,6 +18,7 @@ Plug 'nvim-treesitter/nvim-treesitter', Cond(has('nvim'), {'do': ':TSUpdate'})
 " Plug 'windwp/nvim-ts-autotag'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'danielvolchek/tailiscope.nvim'
+Plug 'neovim/nvim-lspconfig'
 " Installed coc.nvim plugins with the following commands
 " :CocInstall @yaegassy/coc-tailwindcss3
 " :CocInstall coc-tsserver
@@ -28,6 +29,7 @@ Plug 'danielvolchek/tailiscope.nvim'
 " :CocInstall coc-db
 " :CocInstall coc-pairs
 " :CocInstall coc-react-refactor
+" :CocInstall coc-pyright
 
 " Navigation
 if has('nvim')
@@ -59,6 +61,7 @@ Plug 'tpope/vim-commentary' " Might want to go back to nerdcommenter?
 Plug 'tpope/vim-fugitive'
 if has('nvim')
   Plug 'lewis6991/gitsigns.nvim'
+  Plug 'sindrets/diffview.nvim'
 else
   Plug 'airblade/vim-gitgutter'
 endif
@@ -72,6 +75,7 @@ Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 " Call :CocInstall coc-db for https://github.com/kristijanhusak/vim-dadbod-completion
 Plug 'rest-nvim/rest.nvim'
+Plug 'github/copilot.vim'
 
 " Files
 if has('nvim')
@@ -84,9 +88,18 @@ else
 endif
 
 " Display
-Plug 'vim-airline/vim-airline'
-Plug 'karb94/neoscroll.nvim'
-Plug 'stevearc/dressing.nvim'
+if has('nvim')
+  Plug 'nvim-lualine/lualine.nvim'
+  Plug 'rcarriga/nvim-notify'
+  Plug 'karb94/neoscroll.nvim'
+  Plug 'stevearc/dressing.nvim'
+  Plug 'akinsho/bufferline.nvim', { 'tag': 'v3.*' }
+  Plug 'lukas-reineke/indent-blankline.nvim'
+  Plug 'nvim-treesitter/nvim-treesitter-context'
+  Plug 'RRethy/vim-illuminate'
+else
+  Plug 'vim-airline/vim-airline'
+endif
 
 " Colorschemes
 Plug 'EdenEast/nightfox.nvim'
@@ -167,10 +180,10 @@ set splitbelow
 
 " Style Settings
 set number
+set relativenumber
 set colorcolumn=80
 set nocursorcolumn
-set nocursorline
-set norelativenumber
+set cursorline
 set t_Co=256
 
 " Colorscheme Settings
@@ -185,7 +198,8 @@ set background=dark
 let g:everforest_background = 'medium'
 let g:everforest_better_performance = 1
 
-colorscheme duskfox
+" colorscheme duskfox
+colorscheme everforest
 
 "COC
 set pumheight=10
@@ -318,6 +332,7 @@ command Rmc Git mergetool -y
 nnoremap <space> <Nop>
 let mapleader=" "
 
+nnoremap gP "+P
 nnoremap gp "+p
 nnoremap gy "+y
 xnoremap gy "+y
@@ -412,13 +427,15 @@ nnoremap <Leader>pg :tabnew \| DBUI<CR>
 " git/gitgutter
 " nmap <Leader>gt :GitGutterBufferToggle<CR>
 
-" git/vim-fugitive
+" git/vim-fugitive, diffview.nvim
 "https://vi.stackexchange.com/questions/37139/vim-mapping-diffput-diffget-to-ctrlleft-ctrlright-with-working-buffer-sele
 nnoremap <expr> gdh ":diffget " .. '//2/' .. expand('%') .. " \| diffupdate\<CR>"
 nnoremap <expr> gdb ":diffget " .. '//3/' .. expand('%') .. " \| diffupdate\<CR>"
-nmap <Leader>gd :Gvidffsplit<CR>
 nmap <Leader>gc :Git commit -am ''<Left>
 nmap <Leader>gi :Git status<CR>
+nmap <Leader>gi :Git status<CR>
+nmap <Leader>gdf :Gvidffsplit<CR>
+nmap <Leader>gda :DiffviewOpen<CR>
 
 " easymotion
 nmap z/ <Plug>(incsearch-easymotion-/)
@@ -441,12 +458,12 @@ nmap <C-l> :TagbarToggle<CR>
 "autocmd FileType typescript nmap <buffer> <Leader>t : <C-u>echo tsuquyomi#hint()<CR>
 
 " COC
-inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#confirm() : "\<Tab>"
+inoremap <silent><expr> <Tab> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 nmap <silent> <Leader>t <Plug>(coc-type-definition)
 
-nmap <silent> gi mL \| <Plug>(coc-implementation)
-nmap <silent> gr mL \| <Plug>(coc-references)
-nmap <silent> gk mL \| <Plug>(coc-type-definition)
+" nmap <silent> gi mL \| <Plug>(coc-implementation)
+" nmap <silent> gr mL \| <Plug>(coc-references)
+" nmap <silent> gk mL \| <Plug>(coc-type-definition)
 
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
@@ -464,6 +481,18 @@ nmap <silent> <Leader>cf  <Plug>(coc-codeaction-source)
 nmap <Leader>cle :call ToggleCodeLens()<CR>
 nmap <silent> <Leader>clt :CocCommand document.toggleCodeLens<CR>
 nmap <Leader>cl <Plug>(coc-codelens-action)
+
+nmap <Leader>cpe :Copilot enable<CR>
+nmap <Leader>cpd :Copilot disable<CR>
+nmap <Leader>cpp :Copilot panel<CR>
+imap <C-e> <Plug>(copilot-next)
+imap <C-o> <Plug>(copilot-previous)
+imap <silent><script><expr> <C-F> copilot#Accept("")
+let g:copilot_no_tab_map = v:true
+
+command! Path :echo expand('%:p')
+command! Light :colorscheme dawnfox
+command! Dark :colorscheme duskfox
 
 function! ToggleCodeLens()
   let enabled = coc#util#get_config('codeLens')['enable']
@@ -674,9 +703,32 @@ let g:vimspector_base_dir='/Users/aaron/.vim/plugged/vimspector'
 if has('nvim')
 lua <<EOF
 require("mason").setup()
+require('lualine').setup()
+require("bufferline").setup{
+  options = {
+    mode = "tabs",
+    diagnostics = "coc",
+    offsets = {
+      {
+          filetype = "NvimTree",
+          text = "File Explorer",
+          text_align = "left",
+          separator = true
+      }
+    }
+  }
+}
+
+local lspconfig = require('lspconfig')
+lspconfig.pyright.setup{}
+lspconfig.tsserver.setup {}
 
 require('leap').add_default_mappings()
 require('leap').opts.safe_labels = { "s", "f", "n", "u", "t", "/" }
+
+require("indent_blankline").setup()
+
+require'treesitter-context'.setup()
 
 -- disable netrw at the very start of your init.lua (strongly advised)
 vim.g.loaded_netrw = 1
@@ -722,7 +774,8 @@ require'nvim-web-devicons'.setup {
 
 require('telescope').setup{
   defaults = {
-    wrap_results = true
+    wrap_results = true,
+    layout_strategy = "vertical",
   }
 }
 
@@ -733,6 +786,13 @@ vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 -- vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 vim.keymap.set('n', '<leader>fm', builtin.marks, {})
 vim.keymap.set("n", "<leader>fdt", "<cmd>Telescope tailiscope categories<cr>")
+
+-- telescope lsp
+vim.keymap.set('n', '<leader>fr', builtin.lsp_references, {})
+vim.keymap.set('n', '<leader>fi', builtin.lsp_implementations, {})
+vim.keymap.set('n', '<leader>ft', builtin.lsp_type_definitions, {})
+vim.keymap.set('n', '<leader>fci', builtin.lsp_incoming_calls, {})
+vim.keymap.set('n', '<leader>fco', builtin.lsp_outgoing_calls, {})
 
 require('telescope').load_extension('fzf')
 require('telescope').load_extension('tailiscope')
@@ -918,6 +978,9 @@ for _, language in ipairs({ "typescript", "typescriptreact", "javascript", "java
     }
   }
 end
+
+vim.keymap.set('n', '<leader>n', function() require('illuminate').goto_next_reference() end)
+vim.keymap.set('n', '<leader>N', function() require('illuminate').goto_prev_reference() end)
 
 vim.keymap.set('n', '<leader>dc', function() require('dap').continue() end)
 vim.keymap.set('n', '<leader>dl', function() require('dap').run_last() end)
